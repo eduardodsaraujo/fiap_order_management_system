@@ -1,4 +1,4 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.infra.config;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.infrastructure.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

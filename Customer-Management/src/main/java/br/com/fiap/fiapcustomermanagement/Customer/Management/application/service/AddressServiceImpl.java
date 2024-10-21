@@ -1,12 +1,12 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.service;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service;
 
-import br.com.fiap.fiapcustomermanagement.Customer.Management.dto.AddressDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.dto.AddressRequestDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.infra.exception.AddressException;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.model.Address;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.model.Customer;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.repository.AddressRepository;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.repository.CustomerRepository;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressRequestDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.infrastructure.exception.AddressException;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model.Address;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model.Customer;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.repository.AddressRepository;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class AddressService {
+public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
     private final CustomerRepository customerRepository;

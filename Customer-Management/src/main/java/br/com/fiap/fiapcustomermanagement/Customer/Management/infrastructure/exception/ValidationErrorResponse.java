@@ -1,4 +1,4 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.infra.exception;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.infrastructure.exception;
 
 import lombok.Data;
 

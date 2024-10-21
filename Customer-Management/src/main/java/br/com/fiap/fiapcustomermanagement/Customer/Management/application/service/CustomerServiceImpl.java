@@ -1,11 +1,11 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.service;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service;
 
-import br.com.fiap.fiapcustomermanagement.Customer.Management.dto.AddressDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.dto.CustomerDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.dto.CustomerRequestDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.infra.exception.CustomerException;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.model.Customer;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.repository.CustomerRepository;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.CustomerDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.CustomerRequestDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.infrastructure.exception.CustomerException;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model.Customer;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class CustomerService {
+public class CustomerServiceImpl implements CustomerService {
 
     private CustomerRepository customerRepository;
 
@@ -47,7 +47,6 @@ public class CustomerService {
         Customer customer = findCustomerById(id);
         customerRepository.deleteById(customer.getId());
     }
-
 
     private Customer toEntity(CustomerRequestDTO customerRequestDTO) {
         Customer customer = new Customer();

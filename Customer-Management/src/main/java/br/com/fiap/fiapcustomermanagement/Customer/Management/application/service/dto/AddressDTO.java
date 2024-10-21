@@ -1,4 +1,4 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.dto;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

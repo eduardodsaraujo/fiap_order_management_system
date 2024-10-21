@@ -1,8 +1,8 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.controller;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.api.controller;
 
-import br.com.fiap.fiapcustomermanagement.Customer.Management.dto.AddressDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.dto.AddressRequestDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.service.AddressService;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.AddressService;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;

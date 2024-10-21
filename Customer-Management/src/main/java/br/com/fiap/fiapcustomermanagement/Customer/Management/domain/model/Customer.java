@@ -1,4 +1,4 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.model;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
