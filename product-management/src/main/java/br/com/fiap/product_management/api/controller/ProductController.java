@@ -12,10 +12,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-@Tag(name = "Customer", description = "Operations related to product management")
+@Tag(name = "Product", description = "Operations related to product management")
 public class ProductController {
 
     private final ProductService productService;
@@ -53,6 +55,13 @@ public class ProductController {
     public ResponseEntity<ProductDto> findById(@PathVariable long productId) {
         Product product = productService.findById(productId);
         return ResponseEntity.ok(ProductDto.toDto(product));
+    }
+
+    @GetMapping("/all/[{productsIds}]")
+    @Operation(summary = "Get product by ID", description = "Retrieve all product by IDs")
+    public ResponseEntity<List<ProductDto>> findAllById(@PathVariable List<Long> productsIds) {
+        List<Product> products = productService.findAllById(productsIds);
+        return ResponseEntity.ok(ProductDto.toListDto(products));
     }
 
     @GetMapping

@@ -4,6 +4,8 @@ import br.com.fiap.product_management.domain.model.Product;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @Builder
 public class ProductDto {
@@ -28,6 +30,10 @@ public class ProductDto {
                 .enable(product.isEnable())
                 .price(product.getPrice())
                 .build();
+    }
+
+    public static List<ProductDto> toListDto(List<Product> list) {
+        return list.stream().map(ProductDto::toDto).toList();
     }
 
 }

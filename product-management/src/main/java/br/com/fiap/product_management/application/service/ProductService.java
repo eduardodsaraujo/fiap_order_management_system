@@ -6,6 +6,8 @@ import br.com.fiap.product_management.domain.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface ProductService {
 
     Product create(CreateProductInput input);
@@ -17,6 +19,8 @@ public interface ProductService {
     Product disable(long productId);
 
     Product findById(long productId);
+
+    List<Product> findAllById(List<Long> productsIds);
 
     Page<Product> findAllByName(String name, Pageable pageable);
 

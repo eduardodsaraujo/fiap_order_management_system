@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -68,6 +70,11 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public Product findById(long productId) {
         return productRepository.findById(productId).orElseThrow(() -> new ProductException("Product not found"));
+    }
+
+    @Override
+    public List<Product> findAllById(List<Long> productsIds) {
+        return productRepository.findAllById(productsIds);
     }
 
     @Override
