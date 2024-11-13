@@ -20,6 +20,7 @@ public class CloudgatewayApplication {
 		return builder
 				.routes()
 				.route( r -> r.path("/fiapcustomermanagement/**").filters(f -> f.stripPrefix(1)).uri("lb://fiapcustomermanagement"))
+				.route( r -> r.path("/deliverylogistics/**").filters(f -> f.stripPrefix(1)).uri("lb://deliverylogistics"))
 				.build();
 	}
 

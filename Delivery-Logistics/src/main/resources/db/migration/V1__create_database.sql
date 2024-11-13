@@ -2,7 +2,8 @@
 CREATE TABLE delivery (
   id           SERIAL NOT NULL,
   orderid     int4 unique NOT NULL,
-  status       varchar(15) NOT NULL,
+  destination_zipcode   varchar(15) NOT NULL,
+  status       varchar(30) NOT NULL,
   latitude     DECIMAL(9, 6),
   longitude    DECIMAL(9, 6),
   last_updated timestamp NOT NULL,

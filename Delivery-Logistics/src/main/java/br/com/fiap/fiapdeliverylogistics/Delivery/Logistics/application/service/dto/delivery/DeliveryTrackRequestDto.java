@@ -1,4 +1,4 @@
-package br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.dto;
+package br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.dto.delivery;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,5 +13,4 @@ public class DeliveryTrackRequestDto {
     private Long orderId;
     private BigDecimal latitude;
     private BigDecimal longitude;
-
 }

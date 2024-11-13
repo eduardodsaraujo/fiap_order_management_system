@@ -20,6 +20,8 @@ public class Delivery {
     private Long id;
     @Column(name = "orderid")
     private Long orderId;
+    @Column(name = "destination_zipcode")
+    private String destinationZipCode;
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
     private BigDecimal latitude;
