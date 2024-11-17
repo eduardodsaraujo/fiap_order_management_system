@@ -71,7 +71,7 @@ public class ProductControllerTest {
                 .price(150.0)
                 .build();
 
-        Product product = new Product(1L, "P123", "Updated Name", "Updated Description", "Updated Category", "Updated Manufacturer", true, 150.0, 10.0);
+        Product product = new Product(1L, "P123", "Updated Name", "Updated Description", "Updated Category", "Updated Manufacturer", true, 150.0, 2.0, 10.0);
         when(productService.update(eq(1L), any(UpdateProductInput.class))).thenReturn(product);
 
         ResponseEntity<ProductDto> response = productController.update(1L, input);
@@ -83,7 +83,7 @@ public class ProductControllerTest {
 
     @Test
     void testEnable() {
-        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", true, 100.0, 10.0);
+        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", true, 100.0, 2.0, 10.0);
         when(productService.enable(1L)).thenReturn(product);
 
         ResponseEntity<ProductDto> response = productController.enable(1L);
@@ -95,7 +95,7 @@ public class ProductControllerTest {
 
     @Test
     void testDisable() {
-        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", false, 100.0, 10.0);
+        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", false, 100.0, 2.0, 10.0);
         when(productService.disable(1L)).thenReturn(product);
 
         ResponseEntity<ProductDto> response = productController.disable(1L);
@@ -107,7 +107,7 @@ public class ProductControllerTest {
 
     @Test
     void testFindById() {
-        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", true, 100.0, 10.0);
+        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", true, 100.0, 2.0, 10.0);
         when(productService.findById(1L)).thenReturn(product);
 
         ResponseEntity<ProductDto> response = productController.findById(1L);
@@ -120,7 +120,7 @@ public class ProductControllerTest {
     @Test
     void testFindAllByName() {
         Pageable pageable = PageRequest.of(0, 10);
-        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", true, 100.0, 10.0);
+        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", true, 100.0, 2.0, 10.0);
         Page<Product> productPage = new PageImpl<>(Collections.singletonList(product));
         when(productService.findAllByName("Product Name", pageable)).thenReturn(productPage);
 
