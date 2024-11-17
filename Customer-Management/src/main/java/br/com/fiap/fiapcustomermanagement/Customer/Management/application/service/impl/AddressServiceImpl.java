@@ -1,7 +1,8 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.impl;
 
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressRequestDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.AddressService;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.AddressDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.AddressRequestDTO;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.infrastructure.exception.AddressException;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model.Address;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model.Customer;

@@ -1,6 +1,6 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto;
 
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.AddressServiceImpl;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.impl.AddressServiceImpl;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model.Address;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model.Customer;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.repository.AddressRepository;

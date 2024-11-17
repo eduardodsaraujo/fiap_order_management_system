@@ -2,8 +2,8 @@ package br.com.fiap.fiapcustomermanagement.Customer.Management.controller;
 
 import br.com.fiap.fiapcustomermanagement.Customer.Management.api.controller.AddressController;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.AddressService;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressRequestDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.AddressDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.AddressRequestDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

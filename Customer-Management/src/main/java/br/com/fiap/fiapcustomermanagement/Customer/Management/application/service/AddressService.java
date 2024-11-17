@@ -1,7 +1,7 @@
 package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service;
 
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressRequestDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.AddressDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.AddressRequestDTO;
 
 import java.util.List;
 

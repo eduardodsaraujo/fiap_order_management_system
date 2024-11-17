@@ -1,8 +1,8 @@
 package br.com.fiap.fiapcustomermanagement.Customer.Management.api.controller;
 
 import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.CustomerService;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.CustomerDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.CustomerRequestDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.CustomerDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.CustomerRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

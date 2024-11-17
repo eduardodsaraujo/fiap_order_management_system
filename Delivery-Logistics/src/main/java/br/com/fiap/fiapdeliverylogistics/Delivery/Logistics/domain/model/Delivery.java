@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -16,10 +17,8 @@ import java.time.LocalDateTime;
 public class Delivery {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     @Column(name = "orderid")
-    private Long orderId;
+    private UUID orderId;
     @Column(name = "destination_zipcode")
     private String destinationZipCode;
     @Enumerated(EnumType.STRING)
@@ -28,10 +27,10 @@ public class Delivery {
     private BigDecimal longitude;
     private LocalDateTime lastUpdated;
     @ManyToOne
-    @JoinColumn(name = "deliveryid")
+    @JoinColumn(name = "deliverypersonid")
     private DeliveryPerson deliveryPerson;
 
-    public Delivery(Long orderId, DeliveryStatus status) {
+    public Delivery(UUID orderId, DeliveryStatus status) {
         this.orderId = orderId;
         this.status = status;
     }

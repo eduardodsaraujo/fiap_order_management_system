@@ -1,11 +1,11 @@
 package br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.api.controller;
 
 import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.DeliveryPersonService;
-import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.dto.delivery.DeliveryResponseDto;
-import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.dto.deliveryPerson.ChangeDeliveryPersonStatusRequestDto;
-import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.dto.deliveryPerson.DeliveryPersonRequestDto;
-import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.dto.deliveryPerson.DeliveryPersonResponseDto;
-import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.domain.model.Delivery;
+import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.impl.DeliveryPersonServiceImpl;
+import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.dto.delivery.DeliveryResponseDto;
+import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.dto.deliveryPerson.ChangeDeliveryPersonStatusRequestDto;
+import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.dto.deliveryPerson.DeliveryPersonRequestDto;
+import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.dto.deliveryPerson.DeliveryPersonResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -46,8 +46,8 @@ public class DeliveryPersonController {
         return ResponseEntity.ok(deliveryPersonService.findAllDeliveryPeople(pageable));
     }
 
-    @PostMapping("/assign-available-delivery-persons")
-    @Operation(summary = "Assign available delivery people to pending deliveries", description = "Automatically assigns available delivery persons to pending deliveries that need assignment.")
+    @PostMapping("/assign-available-delivery-people")
+    @Operation(summary = "Assign available delivery people to pending deliveries", description = "Automatically assigns available delivery people to pending deliveries that need assignment.")
     public ResponseEntity<Void> assignAvailableDeliveryPeopleToPendingDeliveries() {
         deliveryPersonService.assignAvailableDeliveryPeopleToPendingDeliveries();
         return ResponseEntity.ok().build();

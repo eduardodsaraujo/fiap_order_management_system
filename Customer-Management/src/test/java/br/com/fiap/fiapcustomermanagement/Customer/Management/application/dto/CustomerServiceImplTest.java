@@ -1,6 +1,6 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto;
 
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.CustomerServiceImpl;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.impl.CustomerServiceImpl;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model.Customer;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.repository.CustomerRepository;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.infrastructure.exception.CustomerException;

@@ -1,4 +1,4 @@
-package br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.dto.deliveryPerson;
+package br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.dto.deliveryPerson;
 
 import br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.domain.model.VehicleType;
 import lombok.AllArgsConstructor;

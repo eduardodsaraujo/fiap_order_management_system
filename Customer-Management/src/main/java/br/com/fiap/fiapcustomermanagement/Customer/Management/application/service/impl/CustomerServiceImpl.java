@@ -1,8 +1,9 @@
-package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service;
+package br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.impl;
 
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.AddressDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.CustomerDTO;
-import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.dto.CustomerRequestDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.service.CustomerService;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.AddressDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.CustomerDTO;
+import br.com.fiap.fiapcustomermanagement.Customer.Management.application.dto.CustomerRequestDTO;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.infrastructure.exception.CustomerException;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.model.Customer;
 import br.com.fiap.fiapcustomermanagement.Customer.Management.domain.repository.CustomerRepository;

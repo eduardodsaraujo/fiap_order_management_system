@@ -1,4 +1,4 @@
-package br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.service.dto.shipping;
+package br.com.fiap.fiapdeliverylogistics.Delivery.Logistics.application.dto.shipping;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
