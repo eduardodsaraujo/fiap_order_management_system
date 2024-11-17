@@ -1,6 +1,6 @@
-package br.com.fiap.order_management.infra.config;
+package br.com.fiap.order_management.infra.config.gateway;
 
-import br.com.fiap.order_management.application.gateway.product.ProductEntity;
+import br.com.fiap.order_management.gateway.product.ProductEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

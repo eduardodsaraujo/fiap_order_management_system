@@ -25,7 +25,7 @@ public class DeliveryService {
     private static final String ERROR_MESSAGE = "Delivery not found";
     public DeliveryResponseDto createDelivery(DeliveryRequestDto requestDto) {
         Delivery delivery = new Delivery();
-        delivery.setOrderId(requestDto.getOrderId());
+//        delivery.setOrderId(requestDto.getOrderId()); TODO FIX
         delivery.setDestinationZipCode(requestDto.getDestinationZipCode());
         delivery.setStatus(DeliveryStatus.PENDING);
         delivery.setLastUpdated(LocalDateTime.now());

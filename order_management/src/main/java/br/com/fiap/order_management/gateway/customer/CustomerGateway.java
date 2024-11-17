@@ -1,4 +1,4 @@
-package br.com.fiap.order_management.application.gateway.customer;
+package br.com.fiap.order_management.gateway.customer;
 
 import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.GatewayHeader;

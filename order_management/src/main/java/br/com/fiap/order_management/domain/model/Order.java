@@ -1,6 +1,5 @@
 package br.com.fiap.order_management.domain.model;
 
-import br.com.fiap.order_management.application.gateway.customer.AddressEntity;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;

@@ -1,12 +1,17 @@
-package br.com.fiap.order_management.application.service;
+package br.com.fiap.order_management.application.service.impl;
 
-import br.com.fiap.order_management.application.gateway.customer.AddressEntity;
-import br.com.fiap.order_management.application.gateway.customer.AddressGateway;
-import br.com.fiap.order_management.application.gateway.customer.CustomerEntity;
-import br.com.fiap.order_management.application.gateway.customer.CustomerGateway;
-import br.com.fiap.order_management.application.gateway.product.ProductEntity;
-import br.com.fiap.order_management.application.gateway.product.ProductGateway;
-import br.com.fiap.order_management.application.gateway.product.ProductStockInput;
+import br.com.fiap.order_management.application.service.OrderService;
+import br.com.fiap.order_management.gateway.customer.AddressEntity;
+import br.com.fiap.order_management.gateway.customer.AddressGateway;
+import br.com.fiap.order_management.gateway.customer.CustomerEntity;
+import br.com.fiap.order_management.gateway.customer.CustomerGateway;
+import br.com.fiap.order_management.gateway.delivery.CalculateShippingRequestEntity;
+import br.com.fiap.order_management.gateway.delivery.CalculateShippingResponseEntity;
+import br.com.fiap.order_management.gateway.delivery.DeliveryGateway;
+import br.com.fiap.order_management.gateway.delivery.DeliveryRequestEntity;
+import br.com.fiap.order_management.gateway.product.ProductEntity;
+import br.com.fiap.order_management.gateway.product.ProductGateway;
+import br.com.fiap.order_management.gateway.product.ProductStockInput;
 import br.com.fiap.order_management.application.input.CreateOrderInput;
 import br.com.fiap.order_management.application.input.OrderItemInput;
 import br.com.fiap.order_management.application.input.UpdatePaymentInput;
@@ -17,7 +22,6 @@ import br.com.fiap.order_management.domain.model.Payment;
 import br.com.fiap.order_management.domain.repository.OrderRepository;
 import br.com.fiap.order_management.infra.exception.OrderException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
     private final CustomerGateway customerGateway;
     private final ProductGateway productGateway;
     private final AddressGateway addressGateway;
+    private final DeliveryGateway deliveryGateway;
 
     @Override
     public Order create(CreateOrderInput input) {
@@ -65,12 +70,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order updateDeliveryAddress(UUID orderId, UpdateDeliveryAddressInput input) throws Exception {
+    public Order updateDeliveryAddress(UUID orderId, UpdateDeliveryAddressInput input) {
         Order order = findById(orderId);
         AddressEntity addressEntity = addressGateway.findByCustomerIdAndAddressId(order.getCustomer().getId(), input.getDeliveryAddressId());
-        double shippingValue = 10.0; // TODO DELIVERY SERVICE
+        CalculateShippingResponseEntity shippingValue = deliveryGateway.calculateShipping(
+                new CalculateShippingRequestEntity(addressEntity.getPostalCode(), order.getTotalWeight())
+        );
 
-        order.updateDeliveryAddress(addressEntity.dtoToObject(), shippingValue);
+        order.updateDeliveryAddress(addressEntity.dtoToObject(), shippingValue.getCost());
 
         orderRepository.save(order);
 
@@ -78,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order updatePaymentMethod(UUID orderId, UpdatePaymentInput input) throws Exception {
+    public Order updatePaymentMethod(UUID orderId, UpdatePaymentInput input) {
         Order order = findById(orderId);
         Payment payment = Payment.builder()
                 .paymentMethod(input.getPaymentMethod())
@@ -92,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order process(UUID orderId) throws Exception {
+    public Order process(UUID orderId) {
         Order order = findById(orderId);
 
         // Process product stock
@@ -107,12 +114,21 @@ public class OrderServiceImpl implements OrderService {
         order.processPayment();
         orderRepository.save(order);
 
+        // Process delivery
+        DeliveryRequestEntity requestEntity = new DeliveryRequestEntity(order.getId(), order.getDeliveryAddress().getPostalCode());
+        deliveryGateway.createDelivery(requestEntity);
+
         return order;
     }
 
     @Override
-    public Order findById(UUID orderId) throws Exception {
+    public Order findById(UUID orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new OrderException("Order not found"));
+    }
+
+    @Override
+    public List<Order> findAllByCustomerId(long customerId) {
+        return orderRepository.findAllByCustomerId(customerId);
     }
 
 }

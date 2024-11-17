@@ -1,4 +1,4 @@
-package br.com.fiap.order_management.application.gateway.product;
+package br.com.fiap.order_management.gateway.product;
 
 import br.com.fiap.order_management.domain.model.Product;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ProductStockInput {
 
-    private long id;
+    private long productId;
     private double quantity;
 
 }

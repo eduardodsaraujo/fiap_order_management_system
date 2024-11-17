@@ -1,4 +1,4 @@
-package br.com.fiap.order_management.application.gateway.customer;
+package br.com.fiap.order_management.gateway.customer;
 
 import br.com.fiap.order_management.domain.model.Customer;
 import br.com.fiap.order_management.domain.model.DeliveryAddress;

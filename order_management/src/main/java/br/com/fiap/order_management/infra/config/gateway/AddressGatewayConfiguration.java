@@ -1,7 +1,6 @@
-package br.com.fiap.order_management.infra.config;
+package br.com.fiap.order_management.infra.config.gateway;
 
-import br.com.fiap.order_management.application.gateway.customer.AddressEntity;
-import br.com.fiap.order_management.application.gateway.customer.CustomerEntity;
+import br.com.fiap.order_management.gateway.customer.AddressEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,7 +28,6 @@ public class AddressGatewayConfiguration {
                         .httpMethod(HttpMethod.GET)
                         .expectedResponseType(AddressEntity.class)
                 )
-                .log()
                 .bridge().get();
     }
 

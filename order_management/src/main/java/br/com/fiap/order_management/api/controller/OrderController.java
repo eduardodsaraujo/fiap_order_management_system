@@ -51,6 +51,13 @@ public class OrderController {
         return ResponseEntity.ok(OrderDto.toDto(order));
     }
 
+    @PutMapping(value = "/{orderId}/delivered")
+    @Operation(summary = "Delivered order", description = "Delivered an specified order")
+    public ResponseEntity<Void> updateDelivered(@PathVariable UUID orderId) throws Exception {
+        // TODO IMPLEMENT
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{orderId}")
     @Operation(summary = "Get order by ID", description = "Retrieve order details by ID")
     public ResponseEntity<OrderDto> findById(@PathVariable UUID orderId) throws Exception {

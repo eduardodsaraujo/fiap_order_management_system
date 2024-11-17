@@ -1,4 +1,4 @@
-package br.com.fiap.order_management.application.gateway.product;
+package br.com.fiap.order_management.gateway.product;
 
 import br.com.fiap.order_management.domain.model.Product;
 import lombok.Getter;
@@ -10,6 +10,7 @@ public class ProductEntity {
     private String code;
     private String description;
     private double price;
+    private double weight;
 
     public Product dtoToObject(){
         return Product.builder()
@@ -17,6 +18,7 @@ public class ProductEntity {
                 .code(this.code)
                 .description(this.description)
                 .price(this.price)
+                .weight(this.weight)
                 .build();
     }
 

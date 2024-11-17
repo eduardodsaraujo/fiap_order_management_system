@@ -12,14 +12,14 @@ public interface OrderService {
 
     Order create(CreateOrderInput createOrderInput);
 
-    Order updateDeliveryAddress(UUID orderId, UpdateDeliveryAddressInput input) throws Exception;
+    Order updateDeliveryAddress(UUID orderId, UpdateDeliveryAddressInput input);
 
-    Order updatePaymentMethod(UUID orderId, UpdatePaymentInput input) throws Exception;
+    Order updatePaymentMethod(UUID orderId, UpdatePaymentInput input);
 
-    Order process(UUID orderId) throws Exception;
+    Order process(UUID orderId);
 
-    Order findById(UUID orderId) throws Exception;
+    Order findById(UUID orderId);
 
-    List<Order> findAllByCustomerId(long customerId) throws Exception;
+    List<Order> findAllByCustomerId(long customerId);
 
 }
