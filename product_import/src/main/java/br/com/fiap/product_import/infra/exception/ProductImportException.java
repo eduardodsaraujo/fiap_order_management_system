@@ -1,4 +1,4 @@
-package br.com.fiap.productimport.infra.exception;
+package br.com.fiap.product_import.infra.exception;
 
 public class ProductImportException extends RuntimeException {
 

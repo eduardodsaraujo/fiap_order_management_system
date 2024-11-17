@@ -1,4 +1,4 @@
-package br.com.fiap.productimport.job;
+package br.com.fiap.product_import.job;
 
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;

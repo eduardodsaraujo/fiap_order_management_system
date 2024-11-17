@@ -1,4 +1,4 @@
-package br.com.fiap.productimport.job;
+package br.com.fiap.product_import.job;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

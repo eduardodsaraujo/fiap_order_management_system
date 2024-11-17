@@ -1,8 +1,8 @@
-package br.com.fiap.productimport.application.service;
+package br.com.fiap.product_import.application.service;
 
-import br.com.fiap.productimport.domain.model.ImportFile;
-import br.com.fiap.productimport.gateway.FileGateway;
-import br.com.fiap.productimport.gateway.JobGateway;
+import br.com.fiap.product_import.domain.model.ImportFile;
+import br.com.fiap.product_import.gateway.FileGateway;
+import br.com.fiap.product_import.gateway.JobGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

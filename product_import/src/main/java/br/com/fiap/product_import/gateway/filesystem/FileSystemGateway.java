@@ -1,8 +1,8 @@
-package br.com.fiap.productimport.gateway.filesystem;
+package br.com.fiap.product_import.gateway.filesystem;
 
-import br.com.fiap.productimport.domain.model.ImportFile;
-import br.com.fiap.productimport.gateway.FileGateway;
-import br.com.fiap.productimport.infra.exception.ProductImportException;
+import br.com.fiap.product_import.domain.model.ImportFile;
+import br.com.fiap.product_import.gateway.FileGateway;
+import br.com.fiap.product_import.infra.exception.ProductImportException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

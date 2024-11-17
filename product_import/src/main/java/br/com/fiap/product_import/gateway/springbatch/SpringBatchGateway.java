@@ -1,8 +1,8 @@
-package br.com.fiap.productimport.gateway.springbatch;
+package br.com.fiap.product_import.gateway.springbatch;
 
-import br.com.fiap.productimport.domain.model.ImportFile;
-import br.com.fiap.productimport.gateway.JobGateway;
-import br.com.fiap.productimport.infra.exception.ProductImportException;
+import br.com.fiap.product_import.domain.model.ImportFile;
+import br.com.fiap.product_import.gateway.JobGateway;
+import br.com.fiap.product_import.infra.exception.ProductImportException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;

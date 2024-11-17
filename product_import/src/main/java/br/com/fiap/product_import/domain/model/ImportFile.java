@@ -1,4 +1,4 @@
-package br.com.fiap.productimport.domain.model;
+package br.com.fiap.product_import.domain.model;
 
 import lombok.Builder;
 import lombok.Getter;

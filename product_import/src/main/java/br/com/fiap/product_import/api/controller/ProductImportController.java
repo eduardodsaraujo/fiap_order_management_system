@@ -1,7 +1,7 @@
-package br.com.fiap.productimport.api.controller;
+package br.com.fiap.product_import.api.controller;
 
-import br.com.fiap.productimport.application.service.ProductImportService;
-import br.com.fiap.productimport.domain.model.ImportFile;
+import br.com.fiap.product_import.application.service.ProductImportService;
+import br.com.fiap.product_import.domain.model.ImportFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
