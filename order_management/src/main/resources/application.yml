@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: order-management
+  data:
+    mongodb:
+      uri: mongodb://admin:123456@localhost:27017/fiap_order_management
+
+
+springdoc:
+  swagger-ui:
+    operationsSorter: method
+
+
+server:
+  port: 0
+  forward-headers-strategy: framework
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    instance-id: "${spring.application.name}:${spring.application.instance_id:${random.value}}"
+
+

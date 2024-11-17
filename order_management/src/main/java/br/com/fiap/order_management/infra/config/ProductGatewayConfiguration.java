@@ -22,7 +22,7 @@ public class ProductGatewayConfiguration {
     @Bean
     public IntegrationFlow productFlow() {
         return IntegrationFlow.from("productChannel")
-                .handle(Http.outboundGateway("http://localhost:8082/api/products/all/{productsIds}")
+                .handle(Http.outboundGateway("http://localhost:8080/product-management/api/products/all/{productsIds}")
                         .uriVariable("productsIds", "payload")
                         .httpMethod(HttpMethod.GET)
                         .expectedResponseType(ProductEntity[].class)
@@ -30,5 +30,40 @@ public class ProductGatewayConfiguration {
                 .log()
                 .bridge().get();
     }
+
+    @Bean
+    public MessageChannel increaseProductStockChannel() {
+        DirectChannel directChannel = new DirectChannel();
+        directChannel.setFailover(false);
+        return directChannel;
+    }
+
+    @Bean
+    public IntegrationFlow increaseProductStockFlow() {
+        return IntegrationFlow.from("increaseProductStockChannel")
+                .handle(Http.outboundGateway("http://localhost:8080/product-management/api/products/stock/increase")
+                        .httpMethod(HttpMethod.PUT)
+                )
+                .log()
+                .bridge().get();
+    }
+
+    @Bean
+    public MessageChannel decreaseProductStockChannel() {
+        DirectChannel directChannel = new DirectChannel();
+        directChannel.setFailover(false);
+        return directChannel;
+    }
+
+    @Bean
+    public IntegrationFlow decreaseProductStockFlow() {
+        return IntegrationFlow.from("decreaseProductStockChannel")
+                .handle(Http.outboundGateway("http://localhost:8080/product-management/api/products/stock/decrease")
+                        .httpMethod(HttpMethod.PUT)
+                )
+                .log()
+                .bridge().get();
+    }
+
 
 }

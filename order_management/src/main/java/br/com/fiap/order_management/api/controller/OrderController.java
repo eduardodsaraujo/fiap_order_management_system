@@ -1,5 +1,6 @@
 package br.com.fiap.order_management.api.controller;
 
+import br.com.fiap.order_management.api.controller.dto.OrderDto;
 import br.com.fiap.order_management.application.input.CreateOrderInput;
 import br.com.fiap.order_management.application.input.UpdateDeliveryAddressInput;
 import br.com.fiap.order_management.application.input.UpdatePaymentInput;
@@ -8,10 +9,10 @@ import br.com.fiap.order_management.domain.model.Order;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -55,6 +56,13 @@ public class OrderController {
     public ResponseEntity<OrderDto> findById(@PathVariable UUID orderId) throws Exception {
         Order order = orderService.findById(orderId);
         return ResponseEntity.ok(OrderDto.toDto(order));
+    }
+
+    @GetMapping("/by-customer/{customerId}")
+    @Operation(summary = "Get all order by customer", description = "Retrieve all order for the specified customer")
+    public ResponseEntity<List<OrderDto>> findAllByCustomerId(@PathVariable long customerId) throws Exception {
+        List<Order> order = orderService.findAllByCustomerId(customerId);
+        return ResponseEntity.ok(OrderDto.toListDto(order));
     }
 
 }

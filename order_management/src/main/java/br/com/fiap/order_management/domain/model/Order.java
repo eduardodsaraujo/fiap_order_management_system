@@ -22,6 +22,7 @@ public class Order {
     private double itemTotal;
     private double shippingValue;
     private double total;
+    private double totalWeight;
     private Customer customer;
     private DeliveryAddress deliveryAddress;
     private Payment payment;
@@ -32,12 +33,17 @@ public class Order {
         this.orderDate = LocalDate.now();
         this.status = OrderStatus.NEW;
 
-        this.calculateTotal();
+        calculateTotal();
+        calculateTotalWeight();
     }
 
     private void calculateTotal() {
         itemTotal = items.stream().mapToDouble(item -> item.getQuantity() * item.getProduct().getPrice()).sum();
         total = itemTotal + shippingValue;
+    }
+
+    private void calculateTotalWeight() {
+        totalWeight = items.stream().mapToDouble(item -> item.getQuantity() * item.getProduct().getWeight()).sum();
     }
 
     public void updateDeliveryAddress(DeliveryAddress deliveryAddress, double shippingValue) {

@@ -15,8 +15,12 @@ public interface ProductGateway {
             headers = @GatewayHeader(name = MessageHeaders.REPLY_CHANNEL, expression = "@nullChannel"))
     List<ProductEntity> findAllByIds(List<Long> productsIds);
 
-    @Gateway(requestChannel = "productChannel", requestTimeout = 5000,
+    @Gateway(requestChannel = "decreaseProductStockChannel", requestTimeout = 5000,
             headers = @GatewayHeader(name = MessageHeaders.REPLY_CHANNEL, expression = "@nullChannel"))
-    void decreaseStock(UUID id);
+    void increaseStock(ProductStockInput message);
+
+    @Gateway(requestChannel = "increaseProductStockChannel", requestTimeout = 5000,
+            headers = @GatewayHeader(name = MessageHeaders.REPLY_CHANNEL, expression = "@nullChannel"))
+    void decreaseStock(ProductStockInput message);
 
 }

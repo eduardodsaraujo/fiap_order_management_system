@@ -6,6 +6,7 @@ import br.com.fiap.order_management.application.gateway.customer.CustomerEntity;
 import br.com.fiap.order_management.application.gateway.customer.CustomerGateway;
 import br.com.fiap.order_management.application.gateway.product.ProductEntity;
 import br.com.fiap.order_management.application.gateway.product.ProductGateway;
+import br.com.fiap.order_management.application.gateway.product.ProductStockInput;
 import br.com.fiap.order_management.application.input.CreateOrderInput;
 import br.com.fiap.order_management.application.input.OrderItemInput;
 import br.com.fiap.order_management.application.input.UpdatePaymentInput;
@@ -16,6 +17,7 @@ import br.com.fiap.order_management.domain.model.Payment;
 import br.com.fiap.order_management.domain.repository.OrderRepository;
 import br.com.fiap.order_management.infra.exception.OrderException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,24 +94,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order process(UUID orderId) throws Exception {
         Order order = findById(orderId);
-        order.process();
 
         // Process product stock
         for (OrderItem item : order.getItems()) {
-            productGateway.decreaseStock(item.getId());
+            productGateway.decreaseStock(new ProductStockInput(item.getProduct().getId(), item.getQuantity()));
         }
+
+        order.process();
+        orderRepository.save(order);
 
         // Process payment
         order.processPayment();
-
-        // Process delivery
+        orderRepository.save(order);
 
         return order;
     }
 
     @Override
     public Order findById(UUID orderId) throws Exception {
-        return orderRepository.findById(orderId).orElseThrow(() -> new Exception());
+        return orderRepository.findById(orderId).orElseThrow(() -> new OrderException("Order not found"));
     }
 
 }
