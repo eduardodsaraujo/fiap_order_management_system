@@ -3,7 +3,7 @@ package br.com.fiap.fiapproductmanagement.application.service;
 
 import br.com.fiap.product_management.application.input.CreateProductInput;
 import br.com.fiap.product_management.application.input.UpdateProductInput;
-import br.com.fiap.product_management.application.service.ProductServiceImpl;
+import br.com.fiap.product_management.application.service.impl.ProductServiceImpl;
 import br.com.fiap.product_management.domain.model.Product;
 import br.com.fiap.product_management.domain.repository.ProductRepository;
 import infra.exception.ProductException;

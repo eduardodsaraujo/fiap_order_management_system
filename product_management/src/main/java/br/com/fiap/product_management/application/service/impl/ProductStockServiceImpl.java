@@ -1,6 +1,7 @@
-package br.com.fiap.product_management.application.service;
+package br.com.fiap.product_management.application.service.impl;
 
 import br.com.fiap.product_management.application.input.UpdateStockInput;
+import br.com.fiap.product_management.application.service.ProductStockService;
 import br.com.fiap.product_management.domain.model.Product;
 import br.com.fiap.product_management.domain.repository.ProductRepository;
 import infra.exception.ProductException;
@@ -11,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductStockServiceImpl implements ProductStockService{
+public class ProductStockServiceImpl implements ProductStockService {
 
     private final ProductRepository productRepository;
 

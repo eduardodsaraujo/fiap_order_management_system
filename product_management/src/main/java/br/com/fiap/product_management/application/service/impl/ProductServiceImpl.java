@@ -1,7 +1,8 @@
-package br.com.fiap.product_management.application.service;
+package br.com.fiap.product_management.application.service.impl;
 
 import br.com.fiap.product_management.application.input.CreateProductInput;
 import br.com.fiap.product_management.application.input.UpdateProductInput;
+import br.com.fiap.product_management.application.service.ProductService;
 import br.com.fiap.product_management.domain.model.Product;
 import br.com.fiap.product_management.domain.repository.ProductRepository;
 import infra.exception.ProductException;
@@ -16,7 +17,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
@@ -29,6 +30,7 @@ public class ProductServiceImpl implements ProductService{
                 .category(input.getCategory())
                 .manufacturer(input.getManufacturer())
                 .price(input.getPrice())
+                .weight(input.getWeight())
                 .stockQuantity(input.getStockQuantity())
                 .build();
         product.enable();
@@ -47,6 +49,7 @@ public class ProductServiceImpl implements ProductService{
         product.setCategory(input.getCategory());
         product.setManufacturer(input.getManufacturer());
         product.setPrice(input.getPrice());
+        product.setWeight(input.getWeight());
 
         return product;
     }

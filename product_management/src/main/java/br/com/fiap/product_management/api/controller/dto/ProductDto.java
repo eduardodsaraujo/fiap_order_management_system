@@ -1,4 +1,4 @@
-package br.com.fiap.product_management.api.controller;
+package br.com.fiap.product_management.api.controller.dto;
 
 import br.com.fiap.product_management.domain.model.Product;
 import lombok.Builder;

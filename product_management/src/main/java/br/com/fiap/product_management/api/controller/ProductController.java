@@ -1,5 +1,6 @@
 package br.com.fiap.product_management.api.controller;
 
+import br.com.fiap.product_management.api.controller.dto.ProductDto;
 import br.com.fiap.product_management.application.input.CreateProductInput;
 import br.com.fiap.product_management.application.input.UpdateProductInput;
 import br.com.fiap.product_management.application.service.ProductService;

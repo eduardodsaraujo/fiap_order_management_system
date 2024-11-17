@@ -1,7 +1,7 @@
 package br.com.fiap.fiapproductmanagement.controller;
 
 import br.com.fiap.product_management.api.controller.ProductController;
-import br.com.fiap.product_management.api.controller.ProductDto;
+import br.com.fiap.product_management.api.controller.dto.ProductDto;
 import br.com.fiap.product_management.application.input.CreateProductInput;
 import br.com.fiap.product_management.application.input.UpdateProductInput;
 import br.com.fiap.product_management.application.service.ProductService;
@@ -50,7 +50,7 @@ public class ProductControllerTest {
                 .stockQuantity(10.0)
                 .build();
 
-        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", true, 100.0, 10.0);
+        Product product = new Product(1L, "P123", "Product Name", "Product Description", "Category", "Manufacturer", true, 100.0, 2.0, 10.0);
         when(productService.create(any(CreateProductInput.class))).thenReturn(product);
 
         ResponseEntity<ProductDto> response = productController.create(input);

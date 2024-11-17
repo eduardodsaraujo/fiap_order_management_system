@@ -27,5 +27,6 @@ public class UpdateProductInput {
     private String manufacturer;
     @DecimalMin(value = "0.0", message = "Price cannot be negative")
     private double price;
-
+    @DecimalMin(value = "0.0", message = "Weight cannot be negative")
+    private double weight;
 }
