@@ -1,11 +1,11 @@
-package br.com.fiap.order_management.domain.model;
+package br.com.fiap.order_management.domain.output;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class DeliveryAddress {
+public class DeliveryAddressOutput {
 
     private Long id;
     private String street;

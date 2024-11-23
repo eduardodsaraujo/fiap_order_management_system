@@ -1,11 +1,9 @@
-package br.com.fiap.order_management.domain.model;
+package br.com.fiap.order_management.infra.gateway.integration.dto.product;
 
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
-public class Product {
+public class ProductDto {
 
     private long id;
     private String code;

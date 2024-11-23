@@ -4,6 +4,6 @@ public enum OrderStatus {
 
     NEW,
     CLOSED,
-    PAID
+    DELIVERED, PAID
 
 }

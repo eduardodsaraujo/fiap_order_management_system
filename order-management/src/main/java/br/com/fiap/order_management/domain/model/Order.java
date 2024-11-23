@@ -2,8 +2,6 @@ package br.com.fiap.order_management.domain.model;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,10 +9,8 @@ import java.util.UUID;
 
 @Getter
 @Builder
-@Document
 public class Order {
 
-    @Id
     private UUID id;
     private LocalDate orderDate;
     private OrderStatus status;
@@ -54,6 +50,10 @@ public class Order {
 
     public void updatePayment(Payment payment) {
         this.payment = payment;
+    }
+
+    public void updateDelivered() {
+        this.status = OrderStatus.DELIVERED;
     }
 
     public void process() {

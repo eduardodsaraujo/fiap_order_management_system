@@ -1,11 +1,9 @@
-package br.com.fiap.order_management.domain.model;
+package br.com.fiap.order_management.infra.gateway.integration.dto.customer;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-@Builder
-public class DeliveryAddress {
+@Data
+public class AddressDto {
 
     private Long id;
     private String street;
