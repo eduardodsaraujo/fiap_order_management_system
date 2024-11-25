@@ -1,16 +1,17 @@
 package br.com.fiap.order_management.domain.model;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.UUID;
 
-@Getter
+@Data
 @Builder
 public class Payment {
 
     private UUID id;
     private PaymentMethod paymentMethod;
     private double value;
+    private PaymentReceipt receipt;
 
 }

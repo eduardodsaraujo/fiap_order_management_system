@@ -22,9 +22,8 @@ public class OrderController {
 
     private final CreateOrderUseCase createOrderUseCase;
     private final UpdateOrderDeliveryAddressUseCase updateOrderDeliveryAddressUseCase;
-    private final UpdateOrderPaymentMethodUseCase updateOrderPaymentMethodUseCase;
+    private final OrderCheckoutUseCase orderCheckoutUseCase;
     private final UpdateOrderDeliveredUseCase updateOrderDeliveredUseCase;
-    private final ProcessOrderUseCase processOrderUseCase;
     private final FindOrderByIdUseCase findOrderByIdUseCase;
     private final FindAllOrdersByCustomerIdUseCase findAllOrdersByCustomerIdUseCase;
 
@@ -44,15 +43,8 @@ public class OrderController {
 
     @PutMapping(value = "/{orderId}/payment")
     @Operation(summary = "Update order payment", description = "Update an payment for the specified order")
-    public ResponseEntity<OrderOutput> updatePayment(@PathVariable UUID orderId, @RequestBody UpdatePaymentInput input) {
-        OrderOutput orderOutput = updateOrderPaymentMethodUseCase.update(orderId, input);
-        return ResponseEntity.ok(orderOutput);
-    }
-
-    @PutMapping(value = "/{orderId}/process")
-    @Operation(summary = "Process order", description = "Process an specified order")
-    public ResponseEntity<OrderOutput> process(@PathVariable UUID orderId) {
-        OrderOutput orderOutput = processOrderUseCase.process(orderId);
+    public ResponseEntity<OrderOutput> requestPayment(@PathVariable UUID orderId, @RequestBody UpdatePaymentInput input) {
+        OrderOutput orderOutput = orderCheckoutUseCase.update(orderId, input);
         return ResponseEntity.ok(orderOutput);
     }
 

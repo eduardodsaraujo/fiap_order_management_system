@@ -23,6 +23,7 @@ public class UpdateOrderDeliveryAddressUseCase {
 
     public OrderOutput update(UUID orderId, UpdateDeliveryAddressInput input) {
         Order order = orderGateway.findById(orderId);
+        order.validateIsOpen();
 
         DeliveryAddress deliveryAddress = addressGateway.findAddressByCustomerIdAndAddressId(order.getCustomer().getId(), input.getDeliveryAddressId());
         double shippingValue = deliveryGateway.calculateShipping(deliveryAddress.getPostalCode(), order.getTotalWeight());
