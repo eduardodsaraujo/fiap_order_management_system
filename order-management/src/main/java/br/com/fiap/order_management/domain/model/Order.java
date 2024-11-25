@@ -1,5 +1,6 @@
 package br.com.fiap.order_management.domain.model;
 
+import br.com.fiap.order_management.infra.exception.OrderException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,10 +27,17 @@ public class Order {
     public void create() {
         this.id = UUID.randomUUID();
         this.orderDate = LocalDate.now();
-        this.status = OrderStatus.NEW;
+        this.status = OrderStatus.OPEN;
 
+        validateHasItems();
         calculateTotal();
         calculateTotalWeight();
+    }
+
+    private void validateHasItems() {
+        if (items.isEmpty()) {
+            throw new OrderException("The order does not contain items.");
+        }
     }
 
     private void calculateTotal() {
@@ -50,18 +58,39 @@ public class Order {
 
     public void updatePayment(Payment payment) {
         this.payment = payment;
+        this.status = OrderStatus.WAITING_PAYMENT;
+    }
+
+    public void updateAwaitingShipment() {
+        this.status = OrderStatus.AWAITING_SHIPMENT;
     }
 
     public void updateDelivered() {
         this.status = OrderStatus.DELIVERED;
     }
 
-    public void process() {
-        this.status = OrderStatus.CLOSED;
+    public void processPayment(PaymentReceipt paymentReceipt) {
+        payment.setPaymentTimestamp(paymentReceipt.getPaymentTimestamp());
+        payment.setStatus(paymentReceipt.getStatus());
+        payment.setAuthNumber(paymentReceipt.getAuthNumber());
+
+        this.status = OrderStatus.PAID;
     }
 
-    public void processPayment() {
-        this.status = OrderStatus.PAID;
+    public void cancel() {
+        this.status = OrderStatus.CANCELED;
+    }
+
+    public void validateIsOpen() {
+        if (status != OrderStatus.OPEN) {
+            throw new OrderException("The order is not open.");
+        }
+    }
+
+    public void validateDeliveryAddress() {
+        if (deliveryAddress == null) {
+            throw new OrderException("Invalid delivery address.");
+        }
     }
 
 }

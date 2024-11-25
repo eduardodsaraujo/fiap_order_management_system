@@ -11,6 +11,8 @@ public interface OrderGateway {
 
     Order findById(UUID id);
 
+    Order findByPaymentId(UUID paymentId);
+
     List<Order> findAllByCustomerId(long customerId);
 
 }
