@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -21,5 +22,7 @@ public class PaymentDocument {
     private UUID id;
     private PaymentMethod paymentMethod;
     private double value;
-
+    private LocalDateTime paymentTimestamp;
+    private String status;
+    private String authNumber;
 }

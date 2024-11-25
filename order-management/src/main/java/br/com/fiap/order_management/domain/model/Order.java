@@ -70,7 +70,10 @@ public class Order {
     }
 
     public void processPayment(PaymentReceipt paymentReceipt) {
-        payment.setReceipt(paymentReceipt);
+        payment.setPaymentTimestamp(paymentReceipt.getPaymentTimestamp());
+        payment.setStatus(paymentReceipt.getStatus());
+        payment.setAuthNumber(paymentReceipt.getAuthNumber());
+
         this.status = OrderStatus.PAID;
     }
 

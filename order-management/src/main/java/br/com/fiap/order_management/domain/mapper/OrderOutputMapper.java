@@ -50,8 +50,12 @@ public class OrderOutputMapper {
     private static PaymentOutput toPaymentOutput(Payment payment) {
         if (payment != null) {
             return PaymentOutput.builder()
+                    .id(payment.getId())
                     .paymentMethod(payment.getPaymentMethod())
                     .value(payment.getValue())
+                    .authNumber(payment.getAuthNumber())
+                    .paymentTimestamp(payment.getPaymentTimestamp())
+                    .status(payment.getStatus())
                     .build();
         }
         return null;

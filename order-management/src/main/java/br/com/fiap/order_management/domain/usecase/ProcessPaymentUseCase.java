@@ -27,7 +27,7 @@ public class ProcessPaymentUseCase {
     public void execute(UUID requestPaymentId) {
         Order order = orderGateway.findByPaymentId(requestPaymentId);
 
-        if (order.getPayment().getReceipt() != null) {
+        if (order.getPayment().getStatus() != null) {
             throw new OrderException("Payment already processed.");
         }
 
