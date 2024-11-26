@@ -42,12 +42,11 @@ public class CustomerControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
-        customerDTO = CustomerDTO.builder()
-                .id(1L)
-                .name("John Doe")
-                .email("john.doe@example.com")
-                .phone("123456789")
-                .build();
+        customerDTO = new CustomerDTO();
+        customerDTO.setId(1L);
+        customerDTO.setName("John Doe");
+        customerDTO.setEmail("john.doe@example.com");
+        customerDTO.setPhone("123456789");
     }
 
     @Test
@@ -103,20 +102,18 @@ public class CustomerControllerTest {
 
     @Test
     void updateCustomer_ShouldReturnUpdatedCustomer() throws Exception {
+        // Cria o DTO de solicitação
         CustomerRequestDTO updatedCustomerRequestDTO = new CustomerRequestDTO();
         updatedCustomerRequestDTO.setName("Jane Doe");
         updatedCustomerRequestDTO.setEmail("jane.doe@example.com");
         updatedCustomerRequestDTO.setPhone("987654321");
-
-        CustomerDTO updatedCustomerDTO = CustomerDTO.builder()
-                .id(1L)
-                .name("Jane Doe")
-                .email("jane.doe@example.com")
-                .phone("987654321")
-                .build();
+        CustomerDTO updatedCustomerDTO = new CustomerDTO();
+        updatedCustomerDTO.setId(1L);
+        updatedCustomerDTO.setName("Jane Doe");
+        updatedCustomerDTO.setEmail("jane.doe@example.com");
+        updatedCustomerDTO.setPhone("987654321");
 
         when(customerService.updateCustomer(anyLong(), any(CustomerRequestDTO.class))).thenReturn(updatedCustomerDTO);
-
         mockMvc.perform(put("/api/customers/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Jane Doe\",\"email\":\"jane.doe@example.com\",\"phone\":\"987654321\"}"))
@@ -125,7 +122,6 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$.name").value("Jane Doe"))
                 .andExpect(jsonPath("$.email").value("jane.doe@example.com"))
                 .andExpect(jsonPath("$.phone").value("987654321"));
-
         verify(customerService, times(1)).updateCustomer(anyLong(), any(CustomerRequestDTO.class));
     }
 

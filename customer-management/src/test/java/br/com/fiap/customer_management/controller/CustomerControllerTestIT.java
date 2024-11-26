@@ -35,25 +35,22 @@ public class CustomerControllerTestIT {
 
     @BeforeEach
     void setUp() {
-        addressDTO = AddressDTO.builder()
-                .id(1L)
-                .street("Main St")
-                .number("123")
-                .complement("Apt 4")
-                .district("Central")
-                .city("Metropolis")
-                .state("StateX")
-                .postalCode("12345")
-                .customerId(1L)
-                .build();
-
-        customerDTO = CustomerDTO.builder()
-                .id(1L)
-                .name("John Doe")
-                .email("john.doe@example.com")
-                .phone("123456789")
-                .addresses(List.of(addressDTO))
-                .build();
+        addressDTO = new AddressDTO();
+        addressDTO.setId(1L);
+        addressDTO.setStreet("Main St");
+        addressDTO.setNumber("123");
+        addressDTO.setComplement("Apt 4");
+        addressDTO.setDistrict("Central");
+        addressDTO.setCity("Metropolis");
+        addressDTO.setState("StateX");
+        addressDTO.setPostalCode("12345");
+        addressDTO.setCustomerId(1L);
+        customerDTO = new CustomerDTO();
+        customerDTO.setId(1L);
+        customerDTO.setName("John Doe");
+        customerDTO.setEmail("john.doe@example.com");
+        customerDTO.setPhone("123456789");
+        customerDTO.setAddresses(List.of(addressDTO));
     }
 
     @Test
@@ -119,13 +116,12 @@ public class CustomerControllerTestIT {
         updatedCustomerRequestDTO.setEmail("jane.doe@example.com");
         updatedCustomerRequestDTO.setPhone("987654321");
 
-        CustomerDTO updatedCustomerDTO = CustomerDTO.builder()
-                .id(1L)
-                .name("Jane Doe")
-                .email("jane.doe@example.com")
-                .phone("987654321")
-                .addresses(List.of(addressDTO))
-                .build();
+        CustomerDTO updatedCustomerDTO = new CustomerDTO();
+        updatedCustomerDTO.setId(1L);
+        updatedCustomerDTO.setName("Jane Doe");
+        updatedCustomerDTO.setEmail("jane.doe@example.com");
+        updatedCustomerDTO.setPhone("987654321");
+        updatedCustomerDTO.setAddresses(List.of(addressDTO));
 
         when(customerService.updateCustomer(anyLong(), any(CustomerRequestDTO.class))).thenReturn(updatedCustomerDTO);
 
