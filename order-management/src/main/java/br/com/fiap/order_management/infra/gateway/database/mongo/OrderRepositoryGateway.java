@@ -36,6 +36,14 @@ public class OrderRepositoryGateway implements OrderGateway {
     }
 
     @Override
+    public Order findByPaymentId(UUID paymentId) {
+        OrderDocument orderDocument = orderRepository.findByPaymentId(paymentId)
+                .orElseThrow(() -> new OrderException("Order not found"));
+
+        return OrderDocumentMapper.toDomain(orderDocument);
+    }
+
+    @Override
     public List<Order> findAllByCustomerId(long customerId) {
         List<OrderDocument> ordersDocuments = orderRepository.findAllByCustomerId(customerId);
 

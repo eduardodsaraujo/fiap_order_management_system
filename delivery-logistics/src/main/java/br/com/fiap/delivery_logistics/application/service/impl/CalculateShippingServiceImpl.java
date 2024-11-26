@@ -3,10 +3,12 @@ package br.com.fiap.delivery_logistics.application.service.impl;
 import br.com.fiap.delivery_logistics.application.dto.shipping.CalculateShippingRequestDto;
 import br.com.fiap.delivery_logistics.application.dto.shipping.CalculateShippingResponseDto;
 import br.com.fiap.delivery_logistics.application.service.CalculateShippingService;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Setter
 public class CalculateShippingServiceImpl implements CalculateShippingService {
 
     @Value("${originZip}")

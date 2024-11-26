@@ -13,4 +13,10 @@ public class OrderItem {
     private double quantity;
     private Product product;
 
+    public OrderItem(UUID id, double quantity, Product product) {
+        this.id = id;
+        this.quantity = quantity;
+        this.product = product;
+    }
+
 }
