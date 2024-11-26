@@ -10,8 +10,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.Collections;
 import java.util.List;
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -20,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AddressController.class)
-public class AddressControllerIntegrationTes {
+public class AddressControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -32,8 +34,6 @@ public class AddressControllerIntegrationTes {
     void addAddress_ShouldReturnSavedAddress() throws Exception {
         AddressDTO addressDTO = new AddressDTO();
         addressDTO.setId(1L);
-
-        AddressRequestDTO addressRequestDTO = new AddressRequestDTO();
 
         when(addressService.saveAddress(anyLong(), any(AddressRequestDTO.class))).thenReturn(addressDTO);
 
@@ -75,8 +75,6 @@ public class AddressControllerIntegrationTes {
     void updateAddress_ShouldReturnUpdatedAddress() throws Exception {
         AddressDTO updatedAddress = new AddressDTO();
         updatedAddress.setId(1L);
-
-        AddressRequestDTO addressRequestDTO = new AddressRequestDTO();
 
         when(addressService.updateAddress(anyLong(), anyLong(), any(AddressRequestDTO.class))).thenReturn(updatedAddress);
 

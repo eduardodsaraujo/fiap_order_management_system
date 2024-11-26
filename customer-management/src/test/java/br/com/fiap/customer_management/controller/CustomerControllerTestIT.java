@@ -1,33 +1,26 @@
 package br.com.fiap.customer_management.controller;
 
-
 import br.com.fiap.customer_management.api.controller.CustomerController;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import br.com.fiap.customer_management.application.service.CustomerService;
+import br.com.fiap.customer_management.application.dto.AddressDTO;
 import br.com.fiap.customer_management.application.dto.CustomerDTO;
 import br.com.fiap.customer_management.application.dto.CustomerRequestDTO;
+import br.com.fiap.customer_management.application.service.CustomerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Collections;
 import java.util.List;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CustomerController.class)
-public class CustomerControllerTest {
-
+@SpringBootTest
+public class CustomerControllerTestIT {
 
     private MockMvc mockMvc;
 
@@ -38,15 +31,28 @@ public class CustomerControllerTest {
     private CustomerController customerController;
 
     private CustomerDTO customerDTO;
+    private AddressDTO addressDTO;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+        addressDTO = AddressDTO.builder()
+                .id(1L)
+                .street("Main St")
+                .number("123")
+                .complement("Apt 4")
+                .district("Central")
+                .city("Metropolis")
+                .state("StateX")
+                .postalCode("12345")
+                .customerId(1L)
+                .build();
+
         customerDTO = CustomerDTO.builder()
                 .id(1L)
                 .name("John Doe")
                 .email("john.doe@example.com")
                 .phone("123456789")
+                .addresses(List.of(addressDTO))
                 .build();
     }
 
@@ -66,7 +72,9 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("John Doe"))
                 .andExpect(jsonPath("$.email").value("john.doe@example.com"))
-                .andExpect(jsonPath("$.phone").value("123456789"));
+                .andExpect(jsonPath("$.phone").value("123456789"))
+                .andExpect(jsonPath("$.addresses[0].id").value(1L)) // Verificando se o endereço foi incluído
+                .andExpect(jsonPath("$.addresses[0].street").value("Main St"));
 
         verify(customerService, times(1)).saveCustomer(any(CustomerRequestDTO.class));
     }
@@ -81,13 +89,14 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].name").value("John Doe"))
                 .andExpect(jsonPath("$[0].email").value("john.doe@example.com"))
-                .andExpect(jsonPath("$[0].phone").value("123456789"));
+                .andExpect(jsonPath("$[0].phone").value("123456789"))
+                .andExpect(jsonPath("$[0].addresses[0].id").value(1L));
 
         verify(customerService, times(1)).findAll();
     }
 
     @Test
-    void getCustomerById_ShouldReturnCustomer() throws Exception {
+    void getCustomerById_ShouldReturnCustomerWithAddresses() throws Exception {
         when(customerService.findById(anyLong())).thenReturn(customerDTO);
 
         mockMvc.perform(get("/api/customers/1")
@@ -96,7 +105,9 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("John Doe"))
                 .andExpect(jsonPath("$.email").value("john.doe@example.com"))
-                .andExpect(jsonPath("$.phone").value("123456789"));
+                .andExpect(jsonPath("$.phone").value("123456789"))
+                .andExpect(jsonPath("$.addresses[0].id").value(1L))
+                .andExpect(jsonPath("$.addresses[0].street").value("Main St"));
 
         verify(customerService, times(1)).findById(1L);
     }
@@ -113,6 +124,7 @@ public class CustomerControllerTest {
                 .name("Jane Doe")
                 .email("jane.doe@example.com")
                 .phone("987654321")
+                .addresses(List.of(addressDTO))
                 .build();
 
         when(customerService.updateCustomer(anyLong(), any(CustomerRequestDTO.class))).thenReturn(updatedCustomerDTO);
@@ -124,7 +136,8 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("Jane Doe"))
                 .andExpect(jsonPath("$.email").value("jane.doe@example.com"))
-                .andExpect(jsonPath("$.phone").value("987654321"));
+                .andExpect(jsonPath("$.phone").value("987654321"))
+                .andExpect(jsonPath("$.addresses[0].id").value(1L));
 
         verify(customerService, times(1)).updateCustomer(anyLong(), any(CustomerRequestDTO.class));
     }
@@ -139,4 +152,6 @@ public class CustomerControllerTest {
 
         verify(customerService, times(1)).deleteCustomer(1L);
     }
+
+
 }

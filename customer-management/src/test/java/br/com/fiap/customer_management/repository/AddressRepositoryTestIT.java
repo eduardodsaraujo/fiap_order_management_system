@@ -1,19 +1,21 @@
 package br.com.fiap.customer_management.repository;
 
-
 import br.com.fiap.customer_management.domain.model.Address;
 import br.com.fiap.customer_management.domain.repository.AddressRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-public class AddressRepositoryTest {
+@ActiveProfiles("test")
+public class AddressRepositoryTestIT {
 
     @Autowired
     private AddressRepository addressRepository;
@@ -41,37 +43,49 @@ public class AddressRepositoryTest {
     }
 
     @Test
-    void whenFindByCustomerId_thenReturnAddresses() {
-        Long customerId = 1L;
-        List<Address> foundAddresses = addressRepository.findByCustomer_Id(customerId);
-        assertThat(foundAddresses).isNotEmpty();
-    }
-
-    @Test
-    void whenNoAddressesForCustomer_thenReturnEmptyList() {
-        Long customerId = 999L;
-        List<Address> foundAddresses = addressRepository.findByCustomer_Id(customerId);
-        assertThat(foundAddresses).isEmpty();
-    }
-
-    @Test
-    void whenSaveAddress_thenAddressShouldBeSaved() {
+    void testSaveAddress() {
         Address newAddress = new Address();
         newAddress.setStreet("New Street");
         newAddress.setNumber("789");
         newAddress.setCity("New City");
         newAddress.setState("New State");
-        newAddress.setPostalCode("00000");
-
+        newAddress.setPostalCode("11111");
         Address savedAddress = addressRepository.save(newAddress);
         assertThat(savedAddress.getId()).isNotNull();
         assertThat(savedAddress.getStreet()).isEqualTo("New Street");
+        assertThat(savedAddress.getPostalCode()).isEqualTo("11111");
     }
 
     @Test
-    void whenDeleteAddress_thenAddressShouldBeDeleted() {
-        addressRepository.delete(address1);
-        List<Address> addresses = addressRepository.findByCustomer_Id(1L);
-        assertThat(addresses).doesNotContain(address1);
+    void testFindAllAddresses() {
+        List<Address> addresses = addressRepository.findAll();
+        assertThat(addresses).isNotEmpty();
+        assertThat(addresses).hasSize(2);
     }
+
+    @Test
+    void testFindById() {
+        Optional<Address> foundAddress = addressRepository.findById(address1.getId());
+        assertThat(foundAddress).isPresent();
+        assertThat(foundAddress.get().getStreet()).isEqualTo("Street 1");
+    }
+
+    @Test
+    void testFindByCustomerId() {
+        Long customerId = 1L;
+
+        List<Address> addresses = addressRepository.findByCustomer_Id(customerId);
+        assertThat(addresses).isNotEmpty();
+    }
+
+    @Test
+    void testDeleteAddress() {
+        addressRepository.delete(address1);
+
+        Optional<Address> deletedAddress = addressRepository.findById(address1.getId());
+
+        assertThat(deletedAddress).isNotPresent();
+    }
+
+
 }
