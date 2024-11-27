@@ -1,7 +1,7 @@
 
 CREATE TABLE delivery (
   orderid           UUID,
-  destination_zipcode   varchar(15) NOT NULL,
+  destination_zipcode   varchar(8) NOT NULL,
   status       varchar(30) NOT NULL,
   latitude     DECIMAL(9, 6),
   longitude    DECIMAL(9, 6),

@@ -5,7 +5,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/fiap_delivery_logistics
     username: postgres
-    password: 123456
+    password: admin
 
 springdoc:
   swagger-ui:
@@ -41,7 +41,7 @@ info:
     description: Spring Boot Fiap Delivery Logistics Service
 
 # Shipping data
-originZip: "01451-000"
+originZip: "01451000"
 weightRate: 2
 baseDeliveryTime: 2
 distanceRate: 0.5

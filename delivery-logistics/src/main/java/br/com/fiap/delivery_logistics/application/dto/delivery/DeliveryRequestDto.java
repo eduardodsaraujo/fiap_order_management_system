@@ -15,10 +15,8 @@ import java.util.UUID;
 public class DeliveryRequestDto {
     @NotNull(message = "Order ID cannot be null")
     private UUID orderId;
-    @NotBlank(message = "Destination ZIP Code cannot be blank")
-    @Pattern(
-            regexp = "\\d{5}-\\d{3}",
-            message = "Destination ZIP Code must follow the format XXXXX-XXX"
-    )
+
+    @NotNull(message = "Destination ZIP code cannot be null")
+    @Pattern(regexp = "\\d{8}", message = "Destination ZIP code must contain exactly 8 digits")
     private String destinationZipCode;
 }
