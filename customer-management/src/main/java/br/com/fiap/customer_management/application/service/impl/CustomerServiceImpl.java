@@ -1,8 +1,8 @@
 package br.com.fiap.customer_management.application.service.impl;
 
-import br.com.fiap.customer_management.application.dto.AddressDTO;
-import br.com.fiap.customer_management.application.dto.CustomerDTO;
-import br.com.fiap.customer_management.application.dto.CustomerRequestDTO;
+import br.com.fiap.customer_management.application.AddressDTO;
+import br.com.fiap.customer_management.application.CustomerDTO;
+import br.com.fiap.customer_management.application.CustomerRequestDTO;
 import br.com.fiap.customer_management.application.service.CustomerService;
 import br.com.fiap.customer_management.domain.model.Customer;
 import br.com.fiap.customer_management.domain.repository.CustomerRepository;
@@ -41,7 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
         Customer newCustomer = toEntity(customerRequestDTO);
         newCustomer.setId(customer.getId());
         Customer savedCustomer = customerRepository.save(customer);
-        return toDTO(customer);
+        return toDTO(newCustomer);
     }
 
     public void deleteCustomer(Long id) {

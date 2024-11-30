@@ -1,11 +1,17 @@
-package br.com.fiap.customer_management.application.dto;
+package br.com.fiap.customer_management.application;
 
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AddressRequestDTO {
     @NotBlank(message = "Street is required.")
     @Size(max = 60, message = "Street must not exceed 60 characters.")

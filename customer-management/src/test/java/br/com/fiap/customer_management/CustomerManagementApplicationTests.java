@@ -10,4 +10,9 @@ class CustomerManagementApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void main() {
+		CustomerManagementApplication.main(new String[]{});
+	}
+
 }

@@ -1,4 +1,4 @@
-package br.com.fiap.customer_management.application.dto;
+package br.com.fiap.customer_management.application;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

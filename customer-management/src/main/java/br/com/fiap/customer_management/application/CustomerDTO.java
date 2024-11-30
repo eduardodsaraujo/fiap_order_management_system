@@ -1,8 +1,6 @@
-package br.com.fiap.customer_management.application.dto;
+package br.com.fiap.customer_management.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jdk.jshell.Snippet;
-import lombok.Builder;
 import lombok.Data;
 import java.util.List;
 

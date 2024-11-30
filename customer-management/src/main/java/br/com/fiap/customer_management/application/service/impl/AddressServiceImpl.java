@@ -1,13 +1,14 @@
 package br.com.fiap.customer_management.application.service.impl;
 
-import br.com.fiap.customer_management.application.dto.AddressDTO;
-import br.com.fiap.customer_management.application.dto.AddressRequestDTO;
+import br.com.fiap.customer_management.application.AddressDTO;
+import br.com.fiap.customer_management.application.AddressRequestDTO;
 import br.com.fiap.customer_management.application.service.AddressService;
 import br.com.fiap.customer_management.domain.model.Customer;
 import br.com.fiap.customer_management.infrastructure.exception.AddressException;
 import br.com.fiap.customer_management.domain.model.Address;
 import br.com.fiap.customer_management.domain.repository.AddressRepository;
 import br.com.fiap.customer_management.domain.repository.CustomerRepository;
+import br.com.fiap.customer_management.infrastructure.exception.CustomerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

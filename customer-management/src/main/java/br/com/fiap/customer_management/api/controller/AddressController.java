@@ -1,7 +1,7 @@
 package br.com.fiap.customer_management.api.controller;
 
-import br.com.fiap.customer_management.application.dto.AddressDTO;
-import br.com.fiap.customer_management.application.dto.AddressRequestDTO;
+import br.com.fiap.customer_management.application.AddressDTO;
+import br.com.fiap.customer_management.application.AddressRequestDTO;
 import br.com.fiap.customer_management.application.service.AddressService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,7 +1,7 @@
 package br.com.fiap.customer_management.application.service;
 
-import br.com.fiap.customer_management.application.dto.CustomerDTO;
-import br.com.fiap.customer_management.application.dto.CustomerRequestDTO;
+import br.com.fiap.customer_management.application.CustomerDTO;
+import br.com.fiap.customer_management.application.CustomerRequestDTO;
 
 import java.util.List;
 

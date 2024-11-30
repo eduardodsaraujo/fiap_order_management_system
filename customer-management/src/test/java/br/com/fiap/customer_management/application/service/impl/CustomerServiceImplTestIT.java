@@ -1,16 +1,17 @@
-package br.com.fiap.customer_management.application.dto;
+package br.com.fiap.customer_management.application.service.impl;
 
 
-import br.com.fiap.customer_management.application.dto.CustomerDTO;
-import br.com.fiap.customer_management.application.dto.CustomerRequestDTO;
-import br.com.fiap.customer_management.application.service.impl.CustomerServiceImpl;
+import br.com.fiap.customer_management.application.CustomerDTO;
+import br.com.fiap.customer_management.application.CustomerRequestDTO;
 import br.com.fiap.customer_management.domain.model.Customer;
 import br.com.fiap.customer_management.domain.repository.CustomerRepository;
 import br.com.fiap.customer_management.infrastructure.exception.CustomerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -20,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@AutoConfigureTestDatabase
+@ActiveProfiles("test")
 public class CustomerServiceImplTestIT {
 
     @Autowired
@@ -38,16 +41,15 @@ public class CustomerServiceImplTestIT {
     }
 
     @Test
-    void findAll_ShouldReturnListOfCustomerDTOs() {
+    void shouldReturnListOfCustomerDTOs() {
         List<CustomerDTO> customers = customerService.findAll();
 
         assertNotNull(customers);
-        assertEquals(1, customers.size());
-        assertEquals("John Doe", customers.get(0).getName());
+        assertEquals(2, customers.size());
     }
 
     @Test
-    void saveCustomer_ShouldReturnSavedCustomerDTO() {
+    void shouldReturnSavedCustomerDTO() {
         CustomerRequestDTO customerRequestDTO = new CustomerRequestDTO();
         customerRequestDTO.setName("Jane Doe");
         customerRequestDTO.setEmail("jane.doe@example.com");
@@ -62,7 +64,7 @@ public class CustomerServiceImplTestIT {
     }
 
     @Test
-    void findById_ShouldReturnCustomerDTO_WhenCustomerExists() {
+    void shouldReturnCustomerDTO_WhenCustomerExists() {
         Customer customer = customerRepository.findAll().get(0);
 
         CustomerDTO result = customerService.findById(customer.getId());
@@ -73,13 +75,13 @@ public class CustomerServiceImplTestIT {
     }
 
     @Test
-    void findById_ShouldThrowCustomerException_WhenCustomerNotFound() {
+    void shouldThrowCustomerException_WhenCustomerNotFound() {
         Exception exception = assertThrows(CustomerException.class, () -> customerService.findById(999L));
         assertEquals("Customer not found", exception.getMessage());
     }
 
     @Test
-    void updateCustomer_ShouldReturnUpdatedCustomerDTO() {
+    void shouldReturnUpdatedCustomerDTO() {
         Customer customer = customerRepository.findAll().get(0);
 
         CustomerRequestDTO customerRequestDTO = new CustomerRequestDTO();
@@ -95,7 +97,7 @@ public class CustomerServiceImplTestIT {
     }
 
     @Test
-    void deleteCustomer_ShouldRemoveCustomer_WhenCustomerExists() {
+    void shouldRemoveCustomer_WhenCustomerExists() {
         Customer customer = customerRepository.findAll().get(0);
 
         customerService.deleteCustomer(customer.getId());

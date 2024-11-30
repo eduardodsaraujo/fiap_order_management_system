@@ -5,7 +5,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/fiap_customer_management
     username: postgres
-    password: 123456
+    password: admin
 
   # Uncomment these lines to use environment variables for database connection
   # datasource:
