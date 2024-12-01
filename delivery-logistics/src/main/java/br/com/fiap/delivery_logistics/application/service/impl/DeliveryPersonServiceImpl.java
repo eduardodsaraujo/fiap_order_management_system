@@ -40,7 +40,7 @@ public class DeliveryPersonServiceImpl implements DeliveryPersonService {
     private DeliveryPersonResponseDto toDto(DeliveryPerson deliveryPerson) {
         DeliveryPersonResponseDto responseDto = new DeliveryPersonResponseDto();
         responseDto.setId(deliveryPerson.getId());
-        responseDto.setNome(deliveryPerson.getNome());
+        responseDto.setName(deliveryPerson.getName());
         responseDto.setStatus(deliveryPerson.getStatus());
         responseDto.setVehicleType(deliveryPerson.getVehicleType());
         return responseDto;
@@ -131,7 +131,7 @@ public class DeliveryPersonServiceImpl implements DeliveryPersonService {
         if (savedDelivery.getDeliveryPerson() != null) {
             DeliveryPersonResponseDto deliveryPersonResponseDto = new DeliveryPersonResponseDto();
             deliveryPersonResponseDto.setId(savedDelivery.getDeliveryPerson().getId());
-            deliveryPersonResponseDto.setNome(savedDelivery.getDeliveryPerson().getNome());
+            deliveryPersonResponseDto.setName(savedDelivery.getDeliveryPerson().getName());
             deliveryPersonResponseDto.setVehicleType(savedDelivery.getDeliveryPerson().getVehicleType());
             deliveryPersonResponseDto.setStatus(savedDelivery.getDeliveryPerson().getStatus());
             responseDto.setDeliveryPerson(deliveryPersonResponseDto);

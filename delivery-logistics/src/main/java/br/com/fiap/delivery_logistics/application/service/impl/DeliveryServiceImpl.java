@@ -49,6 +49,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private DeliveryResponseDto toDto(Delivery savedDelivery) {
         DeliveryResponseDto responseDto = new DeliveryResponseDto();
         responseDto.setOrderId(savedDelivery.getOrderId());
+        responseDto.setDestinationZipCode(savedDelivery.getDestinationZipCode());
         responseDto.setStatus(savedDelivery.getStatus());
         responseDto.setLatitude(savedDelivery.getLatitude());
         responseDto.setLongitude(savedDelivery.getLongitude());
@@ -57,7 +58,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (savedDelivery.getDeliveryPerson() != null) {
             DeliveryPersonResponseDto deliveryPersonResponseDto = new DeliveryPersonResponseDto();
             deliveryPersonResponseDto.setId(savedDelivery.getDeliveryPerson().getId());
-            deliveryPersonResponseDto.setNome(savedDelivery.getDeliveryPerson().getNome());
+            deliveryPersonResponseDto.setName(savedDelivery.getDeliveryPerson().getName());
             deliveryPersonResponseDto.setVehicleType(savedDelivery.getDeliveryPerson().getVehicleType());
             deliveryPersonResponseDto.setStatus(savedDelivery.getDeliveryPerson().getStatus());
             responseDto.setDeliveryPerson(deliveryPersonResponseDto);
@@ -78,11 +79,12 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .orElseThrow(() -> new DeliveryException(ERROR_MESSAGE));
         delivery.setStatus(changeDeliveryStatusRequestDto.getStatus());
 
+        deliveryRepository.save(delivery);
+
         if(changeDeliveryStatusRequestDto.getStatus().equals(DeliveryStatus.DELIVERED)){
             orderManagementClient.updateDelivered(deliveryId);
         }
 
-        deliveryRepository.save(delivery);
         return toDto(delivery);
     }
 

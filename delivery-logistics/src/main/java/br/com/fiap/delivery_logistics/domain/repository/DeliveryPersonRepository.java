@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface DeliveryPersonRepository extends JpaRepository<DeliveryPerson, Long> {
     List<DeliveryPerson> findByStatus(DeliveryPersonStatus status);
+
 }

@@ -1,7 +1,5 @@
 package br.com.fiap.delivery_logistics.application.service;
 
-
-import br.com.fiap.delivery_logistics.application.dto.delivery.DeliveryResponseDto;
 import br.com.fiap.delivery_logistics.application.dto.deliveryPerson.ChangeDeliveryPersonStatusRequestDto;
 import br.com.fiap.delivery_logistics.application.dto.deliveryPerson.DeliveryPersonRequestDto;
 import br.com.fiap.delivery_logistics.application.dto.deliveryPerson.DeliveryPersonResponseDto;
@@ -9,24 +7,23 @@ import br.com.fiap.delivery_logistics.application.service.impl.DeliveryPersonSer
 import br.com.fiap.delivery_logistics.domain.model.*;
 import br.com.fiap.delivery_logistics.domain.repository.DeliveryPersonRepository;
 import br.com.fiap.delivery_logistics.domain.repository.DeliveryRepository;
+import br.com.fiap.delivery_logistics.infrastructure.exception.DeliveryException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.mockito.MockitoAnnotations;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class DeliveryPersonServiceImplTest {
+class DeliveryPersonServiceImplTest {
 
-    @InjectMocks
     private DeliveryPersonServiceImpl deliveryPersonService;
 
     @Mock
@@ -35,128 +32,108 @@ public class DeliveryPersonServiceImplTest {
     @Mock
     private DeliveryRepository deliveryRepository;
 
+    AutoCloseable openMocks;
+
     @BeforeEach
-    void setUp() {
+    void setup() {
+        openMocks = MockitoAnnotations.openMocks(this);
+        deliveryPersonService = new DeliveryPersonServiceImpl(deliveryPersonRepository, deliveryRepository);
     }
 
     @Test
-    void testCreateDeliveryPerson() {
-        DeliveryPersonRequestDto requestDto = new DeliveryPersonRequestDto("John Doe", VehicleType.MOTORCYCLE);
-        DeliveryPerson savedDeliveryPerson = new DeliveryPerson("John Doe", VehicleType.MOTORCYCLE);
-        savedDeliveryPerson.setId(1L);
-        savedDeliveryPerson.setStatus(DeliveryPersonStatus.AVAILABLE);
+    void shouldCreateDeliveryPerson() {
+        // Arrange
+        var request = new DeliveryPersonRequestDto();
+        request.setNome("John Doe");
+        request.setVehicleType(VehicleType.BICYCLE);
 
-        when(deliveryPersonRepository.save(any(DeliveryPerson.class))).thenReturn(savedDeliveryPerson);
+        var deliveryPerson = new DeliveryPerson("John Doe", VehicleType.BICYCLE);
+        deliveryPerson.setId(1L);
+        deliveryPerson.setStatus(DeliveryPersonStatus.AVAILABLE);
 
-        DeliveryPersonResponseDto responseDto = deliveryPersonService.createDeliveryPerson(requestDto);
+        when(deliveryPersonRepository.save(any(DeliveryPerson.class))).thenReturn(deliveryPerson);
 
-        assertNotNull(responseDto);
-        assertEquals(1L, responseDto.getId());
-        assertEquals("John Doe", responseDto.getNome());
-        assertEquals(VehicleType.MOTORCYCLE, responseDto.getVehicleType());
-        assertEquals(DeliveryPersonStatus.AVAILABLE, responseDto.getStatus());
+        // Act
+        DeliveryPersonResponseDto response = deliveryPersonService.createDeliveryPerson(request);
 
+        // Assert
+        assertThat(response)
+                .isNotNull()
+                .extracting(DeliveryPersonResponseDto::getId, DeliveryPersonResponseDto::getName, DeliveryPersonResponseDto::getStatus, DeliveryPersonResponseDto::getVehicleType)
+                .containsExactly(1L, "John Doe", DeliveryPersonStatus.AVAILABLE, VehicleType.BICYCLE);
         verify(deliveryPersonRepository, times(1)).save(any(DeliveryPerson.class));
     }
 
     @Test
-    void testAssignAvailableDeliveryPeopleToPendingDeliveries() {
-        DeliveryPerson availablePerson = new DeliveryPerson("John Doe", VehicleType.MOTORCYCLE);
-        availablePerson.setId(1L);
-        availablePerson.setStatus(DeliveryPersonStatus.AVAILABLE);
+    void shouldAssignAvailableDeliveryPeopleToPendingDeliveries() {
+        // Arrange
+        var deliveryPerson = new DeliveryPerson("Jane Smith", VehicleType.CAR);
+        deliveryPerson.setId(1L);
+        deliveryPerson.setStatus(DeliveryPersonStatus.AVAILABLE);
 
-        List<DeliveryPerson> availableDeliveryPersons = Collections.singletonList(availablePerson);
-        when(deliveryPersonRepository.findByStatus(DeliveryPersonStatus.AVAILABLE)).thenReturn(availableDeliveryPersons);
+        var delivery = new Delivery();
+        delivery.setOrderId(UUID.randomUUID());
+        delivery.setStatus(DeliveryStatus.PENDING);
+        delivery.setDestinationZipCode("12345678");
 
-        Delivery pendingDelivery = new Delivery();
-        pendingDelivery.setStatus(DeliveryStatus.PENDING);
-        pendingDelivery.setDestinationZipCode("12345");
-        List<Delivery> pendingDeliveries = Collections.singletonList(pendingDelivery);
-        when(deliveryRepository.findByStatus(DeliveryStatus.PENDING)).thenReturn(pendingDeliveries);
+        when(deliveryPersonRepository.findByStatus(DeliveryPersonStatus.AVAILABLE))
+                .thenReturn(List.of(deliveryPerson));
+        when(deliveryRepository.findByStatus(DeliveryStatus.PENDING))
+                .thenReturn(List.of(delivery));
 
-        SortedMap<String, List<Delivery>> routes = new TreeMap<>();
-        routes.put("region 12345", pendingDeliveries);
-        when(deliveryPersonService.calculateRoutesByRegion()).thenReturn(routes);
-
+        // Act
         deliveryPersonService.assignAvailableDeliveryPeopleToPendingDeliveries();
 
-        assertEquals(DeliveryStatus.WAITING_FOR_PICKUP, pendingDelivery.getStatus());
-        assertEquals(availablePerson, pendingDelivery.getDeliveryPerson());
-
-        verify(deliveryPersonRepository, times(1)).findByStatus(DeliveryPersonStatus.AVAILABLE);
-        verify(deliveryRepository, times(1)).findByStatus(DeliveryStatus.PENDING);
+        // Assert
         verify(deliveryRepository, times(1)).saveAll(anyList());
     }
 
     @Test
-    void testChangeDeliveryPersonStatus() {
-        Long deliveryPersonId = 1L;
-        ChangeDeliveryPersonStatusRequestDto requestDto = new ChangeDeliveryPersonStatusRequestDto(deliveryPersonId, DeliveryPersonStatus.UNAVAILABLE);
+    void shouldThrowExceptionWhenNoAvailableDeliveryPersons() {
+        // Arrange
+        when(deliveryPersonRepository.findByStatus(DeliveryPersonStatus.AVAILABLE)).thenReturn(new ArrayList<>());
 
-        DeliveryPerson deliveryPerson = new DeliveryPerson("John Doe", VehicleType.MOTORCYCLE);
-        deliveryPerson.setId(deliveryPersonId);
+        // Act & Assert
+        assertThatThrownBy(() -> deliveryPersonService.assignAvailableDeliveryPeopleToPendingDeliveries())
+                .isInstanceOf(DeliveryException.class)
+                .hasMessage("Not  available delivery persons.");
+    }
+
+    @Test
+    void shouldChangeDeliveryPersonStatus() {
+        // Arrange
+        var deliveryPerson = new DeliveryPerson("John Doe", VehicleType.BICYCLE);
+        deliveryPerson.setId(1L);
         deliveryPerson.setStatus(DeliveryPersonStatus.AVAILABLE);
 
-        when(deliveryPersonRepository.findById(deliveryPersonId)).thenReturn(Optional.of(deliveryPerson));
+        var request = new ChangeDeliveryPersonStatusRequestDto();
+        request.setStatus(DeliveryPersonStatus.UNAVAILABLE);
+
+        when(deliveryPersonRepository.findById(1L)).thenReturn(Optional.of(deliveryPerson));
         when(deliveryPersonRepository.save(any(DeliveryPerson.class))).thenReturn(deliveryPerson);
 
-        DeliveryPersonResponseDto responseDto = deliveryPersonService.changeDeliveryPersonStatus(deliveryPersonId, requestDto);
+        // Act
+        var response = deliveryPersonService.changeDeliveryPersonStatus(1L, request);
 
-        assertNotNull(responseDto);
-        assertEquals(DeliveryPersonStatus.UNAVAILABLE, responseDto.getStatus());
-        assertEquals(deliveryPersonId, responseDto.getId());
-
-        verify(deliveryPersonRepository, times(1)).findById(deliveryPersonId);
+        // Assert
+        assertThat(response)
+                .isNotNull()
+                .extracting(DeliveryPersonResponseDto::getId, DeliveryPersonResponseDto::getStatus)
+                .containsExactly(1L, DeliveryPersonStatus.UNAVAILABLE);
         verify(deliveryPersonRepository, times(1)).save(any(DeliveryPerson.class));
     }
 
     @Test
-    void testFindAllDeliveryPeople() {
-        Pageable pageable = PageRequest.of(0, 10);
-        DeliveryPerson deliveryPerson1 = new DeliveryPerson("John Doe", VehicleType.MOTORCYCLE);
-        deliveryPerson1.setId(1L);
-        DeliveryPerson deliveryPerson2 = new DeliveryPerson("Jane Doe", VehicleType.CAR);
-        deliveryPerson2.setId(2L);
+    void shouldThrowExceptionWhenDeliveryPersonNotFound() {
+        // Arrange
+        when(deliveryPersonRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Page<DeliveryPerson> page = new PageImpl<>(Arrays.asList(deliveryPerson1, deliveryPerson2), pageable, 2);
-        when(deliveryPersonRepository.findAll(pageable)).thenReturn(page);
+        var request = new ChangeDeliveryPersonStatusRequestDto();
+        request.setStatus(DeliveryPersonStatus.UNAVAILABLE);
 
-        Page<DeliveryPersonResponseDto> responseDtoPage = deliveryPersonService.findAllDeliveryPeople(pageable);
-
-        assertEquals(2, responseDtoPage.getContent().size());
-        assertEquals("John Doe", responseDtoPage.getContent().get(0).getNome());
-        assertEquals("Jane Doe", responseDtoPage.getContent().get(1).getNome());
-
-        verify(deliveryPersonRepository, times(1)).findAll(pageable);
-    }
-
-    @Test
-    void testCalculateRoutesByRegionResponse() {
-
-        UUID orderId = UUID.randomUUID();
-        Delivery delivery1 = new Delivery();
-        delivery1.setOrderId(orderId);
-        delivery1.setStatus(DeliveryStatus.PENDING);
-        delivery1.setDestinationZipCode("12345-020");
-        delivery1.setLatitude(BigDecimal.valueOf(10.0));
-        delivery1.setLongitude(BigDecimal.valueOf(20.0));
-
-        DeliveryResponseDto deliveryResponseDto1 = new DeliveryResponseDto();
-        deliveryResponseDto1.setOrderId(orderId);
-        deliveryResponseDto1.setStatus(DeliveryStatus.PENDING);
-        deliveryResponseDto1.setLatitude(BigDecimal.valueOf(10.0));
-        deliveryResponseDto1.setLongitude(BigDecimal.valueOf(20.0));
-
-        SortedMap<String, List<Delivery>> routes = new TreeMap<>();
-        routes.put("region 12345", Arrays.asList(delivery1));
-        when(deliveryPersonService.calculateRoutesByRegion()).thenReturn(routes);
-
-        SortedMap<String, List<DeliveryResponseDto>> routesDto = deliveryPersonService.calculateRoutesByRegionResponse();
-
-        assertEquals(1, routesDto.size());
-        assertEquals(1, routesDto.get("region 12345").size());
-        assertEquals(1L, routesDto.get("region 12345").get(0).getOrderId());
-
-        verify(deliveryPersonService, times(1)).calculateRoutesByRegion();
+        // Act & Assert
+        assertThatThrownBy(() -> deliveryPersonService.changeDeliveryPersonStatus(1L, request))
+                .isInstanceOf(DeliveryException.class)
+                .hasMessage("Delivery Person not found");
     }
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DeliveryPersonResponseDto {
     private Long id;
-    private String nome;
+    private String name;
     private VehicleType vehicleType;
     private DeliveryPersonStatus status;
 }

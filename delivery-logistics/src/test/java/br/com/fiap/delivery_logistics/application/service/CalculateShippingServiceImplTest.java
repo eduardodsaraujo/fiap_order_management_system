@@ -5,46 +5,84 @@ import br.com.fiap.delivery_logistics.application.dto.shipping.CalculateShipping
 import br.com.fiap.delivery_logistics.application.service.impl.CalculateShippingServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-public class CalculateShippingServiceImplTest {
+class CalculateShippingServiceImplTest {
 
+    @InjectMocks
     private CalculateShippingServiceImpl calculateShippingService;
 
-    @Value("${originZip}")
-    private String originZip;
-
-    @Value("${weightRate}")
-    private double weightRate;
-
-    @Value("${baseDeliveryTime}")
-    private int baseDeliveryTime;
-
-    @Value("${distanceRate}")
-    private double distanceRate;
-
     @BeforeEach
+    void setup() {
+        MockitoAnnotations.openMocks(this);
 
-    void setUp() {
-        calculateShippingService = new CalculateShippingServiceImpl();
-        calculateShippingService.setOriginZip("01451-000");
-        calculateShippingService.setWeightRate(1.2);
-        calculateShippingService.setBaseDeliveryTime(5);
-        calculateShippingService.setDistanceRate(0.8);
+        // Configuração dos valores simulados para os @Value
+        calculateShippingService.setOriginZip("12345-678");
+        calculateShippingService.setWeightRate(10.0);
+        calculateShippingService.setBaseDeliveryTime(2);
+        calculateShippingService.setDistanceRate(1.5);
     }
 
+    @Test
+    void shouldCalculateShippingCostAndTime() {
+        // Arrange
+        var requestDto = new CalculateShippingRequestDto();
+        requestDto.setDestinationZipCode("45678-123");
+        requestDto.setWeightProducts(5);
+
+        // Act
+        var response = calculateShippingService.calculateShipping(requestDto);
+
+        // Assert
+        assertThat(response).isNotNull();
+        assertThat(response.getDeliveryTime()).isGreaterThanOrEqualTo(2);
+        assertThat(response.getCost()).isPositive();
+    }
 
     @Test
-    void calculateShipping_ShouldReturnCorrectShippingCostAndDeliveryTime() {
-        CalculateShippingRequestDto requestDto = new CalculateShippingRequestDto("12345678", 10);
-        CalculateShippingResponseDto response = calculateShippingService.calculateShipping(requestDto);
-        double expectedShippingCost = (10.0 * weightRate) + (5 * distanceRate);
-        int expectedDeliveryTime = baseDeliveryTime + 4;
-        assertEquals(expectedShippingCost, response.getCost());
-        assertEquals(expectedDeliveryTime, response.getDeliveryTime());
+    void shouldEstimateDeliveryTimeBasedOnRegion() {
+        // Arrange
+        var requestDto = new CalculateShippingRequestDto();
+        requestDto.setDestinationZipCode("24567123"); // Região 2
+        requestDto.setWeightProducts(5);
+
+        // Act
+        var response = calculateShippingService.calculateShipping(requestDto);
+
+        // Assert
+        assertThat(response.getDeliveryTime()).isEqualTo(4); // baseDeliveryTime (2) + região (2)
+    }
+
+    @Test
+    void shouldReturnBaseDeliveryTimeForUnexpectedRegion() {
+        // Arrange
+        var requestDto = new CalculateShippingRequestDto();
+        requestDto.setDestinationZipCode("04567123"); // Região 0
+        requestDto.setWeightProducts(5);
+
+        // Act
+        var response = calculateShippingService.calculateShipping(requestDto);
+
+        // Assert
+        assertThat(response.getDeliveryTime()).isEqualTo(2); // Apenas baseDeliveryTime
+    }
+
+    @Test
+    void shouldCalculateShippingCostWithCorrectFormula() {
+        // Arrange
+        var requestDto = new CalculateShippingRequestDto();
+        requestDto.setDestinationZipCode("34567-123");
+        requestDto.setWeightProducts(3); // Peso
+
+        // Act
+        var response = calculateShippingService.calculateShipping(requestDto);
+
+        // Assert
+        var expectedShippingCost = (3 * 10.0) + (5 * 1.5); // Fórmula: peso * weightRate + tempo * distanceRate
+        assertThat(response.getCost()).isEqualTo(expectedShippingCost);
     }
 }

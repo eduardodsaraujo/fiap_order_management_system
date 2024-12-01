@@ -2,6 +2,7 @@ package br.com.fiap.delivery_logistics.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,12 +12,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 public class DeliveryPerson {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nome;
+    private String name;
     @Enumerated(EnumType.STRING)
     private VehicleType vehicleType;
     @Enumerated(EnumType.STRING)
@@ -24,8 +26,8 @@ public class DeliveryPerson {
     @OneToMany(mappedBy = "deliveryPerson")
     private List<Delivery> deliveries;  // One-to-Many relationship with Delivery
 
-    public DeliveryPerson(String nome, VehicleType vehicleType) {
-        this.nome = nome;
+    public DeliveryPerson(String name, VehicleType vehicleType) {
+        this.name = name;
         this.vehicleType = vehicleType;
     }
 }

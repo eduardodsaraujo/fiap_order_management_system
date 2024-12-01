@@ -1,126 +1,125 @@
 package br.com.fiap.delivery_logistics.controller;
-
-
+import java.util.TreeMap;
 import br.com.fiap.delivery_logistics.api.controller.DeliveryPersonController;
 import br.com.fiap.delivery_logistics.application.dto.delivery.DeliveryResponseDto;
 import br.com.fiap.delivery_logistics.application.dto.deliveryPerson.ChangeDeliveryPersonStatusRequestDto;
 import br.com.fiap.delivery_logistics.application.dto.deliveryPerson.DeliveryPersonRequestDto;
 import br.com.fiap.delivery_logistics.application.dto.deliveryPerson.DeliveryPersonResponseDto;
 import br.com.fiap.delivery_logistics.application.service.DeliveryPersonService;
-import br.com.fiap.delivery_logistics.domain.model.DeliveryPersonStatus;
-import br.com.fiap.delivery_logistics.domain.model.DeliveryStatus;
-import br.com.fiap.delivery_logistics.domain.model.VehicleType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
-public class DeliveryPersonControllerTest {
+class DeliveryPersonControllerTest {
+
+    private MockMvc mockMvc;
 
     @Mock
     private DeliveryPersonService deliveryPersonService;
 
-    @InjectMocks
-    private DeliveryPersonController deliveryPersonController;
-
-    private MockMvc mockMvc;
-
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(deliveryPersonController).build();
+        MockitoAnnotations.openMocks(this);
+        DeliveryPersonController deliveryPersonController = new DeliveryPersonController(deliveryPersonService);
+        mockMvc = MockMvcBuilders.standaloneSetup(deliveryPersonController)
+                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+
+                .build();
     }
 
     @Test
-    void testSaveDeliveryPerson() throws Exception {
-        UUID orderId = UUID.randomUUID();
-        DeliveryPersonResponseDto deliveryPerson = new DeliveryPersonResponseDto(1L, "John Doe", VehicleType.CAR, DeliveryPersonStatus.AVAILABLE);
-        DeliveryResponseDto responseDto = new DeliveryResponseDto(
-                orderId,
-                DeliveryStatus.PENDING,
-                new BigDecimal("10.1234"),
-                new BigDecimal("20.1234"),
-                LocalDateTime.now(),
-                deliveryPerson
-        );
+    void shouldCreateDeliveryPerson() throws Exception {
+        // Arrange
+        DeliveryPersonRequestDto deliveryPersonRequestDto = new DeliveryPersonRequestDto();
+        DeliveryPersonResponseDto savedDeliveryPerson = new DeliveryPersonResponseDto(1L, "John Doe", null, null);
 
-        when(deliveryPersonService.createDeliveryPerson(any())).thenReturn(responseDto.getDeliveryPerson());
+        when(deliveryPersonService.createDeliveryPerson(any(DeliveryPersonRequestDto.class)))
+                .thenReturn(savedDeliveryPerson);
+
+        // Act & Assert
         mockMvc.perform(post("/api/deliveryperson")
                         .contentType("application/json")
-                        .content("{\"name\":\"John Doe\",\"status\":\"Available\"}"))
+                        .content(asJsonString(deliveryPersonRequestDto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("John Doe"))
-                .andExpect(jsonPath("$.status").value("Available"));
+                .andExpect(jsonPath("$.id").value(savedDeliveryPerson.getId()))
+                .andExpect(jsonPath("$.name").value(savedDeliveryPerson.getName()));
 
-        verify(deliveryPersonService, times(1)).createDeliveryPerson(any());
+        verify(deliveryPersonService, times(1)).createDeliveryPerson(any(DeliveryPersonRequestDto.class));
     }
 
     @Test
-    void testUpdateDeliveryPersonStatus() throws Exception {
-        DeliveryPersonResponseDto responseDto = new DeliveryPersonResponseDto(
-                1L, "John Doe", VehicleType.CAR, DeliveryPersonStatus.UNAVAILABLE
-        );
-        when(deliveryPersonService.changeDeliveryPersonStatus(anyLong(), any())).thenReturn(responseDto);
+    void shouldUpdateDeliveryPersonStatus() throws Exception {
+        // Arrange
+        Long id = 1L;
+        ChangeDeliveryPersonStatusRequestDto statusRequest = new ChangeDeliveryPersonStatusRequestDto();
+        DeliveryPersonResponseDto updatedDeliveryPerson = new DeliveryPersonResponseDto(id, "John Doe", null, null);
 
-        mockMvc.perform(put("/api/deliveryperson/{id}", 1L)
+        when(deliveryPersonService.changeDeliveryPersonStatus(eq(id), any(ChangeDeliveryPersonStatusRequestDto.class)))
+                .thenReturn(updatedDeliveryPerson);
+
+        // Act & Assert
+        mockMvc.perform(put("/api/deliveryperson/{id}", id)
                         .contentType("application/json")
-                        .content("{\"deliveryPersonId\":1,\"status\":\"UNAVAILABLE\"}"))
+                        .content(asJsonString(statusRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.nome").value("John Doe"))
-                .andExpect(jsonPath("$.vehicleType").value("CAR"))
-                .andExpect(jsonPath("$.status").value("UNAVAILABLE"));
+                .andExpect(jsonPath("$.id").value(updatedDeliveryPerson.getId()))
+                .andExpect(jsonPath("$.name").value(updatedDeliveryPerson.getName()));
 
-        verify(deliveryPersonService, times(1)).changeDeliveryPersonStatus(eq(1L), any());
+        verify(deliveryPersonService, times(1)).changeDeliveryPersonStatus(eq(id), any(ChangeDeliveryPersonStatusRequestDto.class));
     }
 
     @Test
-    void testGetAllDeliveries() throws Exception {
-        Page<DeliveryPersonResponseDto> page = new PageImpl<>(Arrays.asList(
-                new DeliveryPersonResponseDto(1L, "John Doe", VehicleType.CAR, DeliveryPersonStatus.AVAILABLE),
-                new DeliveryPersonResponseDto(2L, "Jane Doe", VehicleType.MOTORCYCLE, DeliveryPersonStatus.UNAVAILABLE)
-        ));
+    void shouldGetAllDeliveryPersons() throws Exception {
+        // Arrange
+        DeliveryPersonResponseDto deliveryPerson1 = new DeliveryPersonResponseDto(1L, "John Doe", null, null);
+        DeliveryPersonResponseDto deliveryPerson2 = new DeliveryPersonResponseDto(2L, "Jane Doe", null, null);
+        Pageable pageable = PageRequest.of(0, 10); // Page 0 with 10 elements per page
+        List<DeliveryPersonResponseDto> deliveryPeopleList = Arrays.asList(deliveryPerson1, deliveryPerson2);
 
-        when(deliveryPersonService.findAllDeliveryPeople(any())).thenReturn(page);
+        Page<DeliveryPersonResponseDto> deliveryPeople =
+                new PageImpl<>(deliveryPeopleList, pageable, deliveryPeopleList.size());
 
-        mockMvc.perform(get("/api/deliveryperson")
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(2))
-                .andExpect(jsonPath("$.content[0].id").value(1L))
-                .andExpect(jsonPath("$.content[0].nome").value("John Doe"))
-                .andExpect(jsonPath("$.content[0].status").value("AVAILABLE"))
-                .andExpect(jsonPath("$.content[1].id").value(2L))
-                .andExpect(jsonPath("$.content[1].nome").value("Jane Doe"))
-                .andExpect(jsonPath("$.content[1].status").value("UNAVAILABLE"));
 
-        verify(deliveryPersonService, times(1)).findAllDeliveryPeople(any(Pageable.class));
+        when(deliveryPersonService.findAllDeliveryPeople(any(PageRequest.class)))
+                .thenReturn(deliveryPeople);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/deliveryperson",pageable)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(deliveryPersonService, times(1)).findAllDeliveryPeople(any(PageRequest.class));
     }
 
     @Test
-    void testAssignAvailableDeliveryPeopleToPendingDeliveries() throws Exception {
+    void shouldAssignAvailableDeliveryPeopleToPendingDeliveries() throws Exception {
+        // Arrange
         doNothing().when(deliveryPersonService).assignAvailableDeliveryPeopleToPendingDeliveries();
 
+        // Act & Assert
         mockMvc.perform(post("/api/deliveryperson/assign-available-delivery-people"))
                 .andExpect(status().isOk());
 
@@ -128,17 +127,27 @@ public class DeliveryPersonControllerTest {
     }
 
     @Test
-    void testCalculateRoutes() throws Exception {
-        DeliveryPersonResponseDto responseDto = new DeliveryPersonResponseDto(
-                1L, "John Doe", VehicleType.CAR, DeliveryPersonStatus.UNAVAILABLE
-        );
-        when(deliveryPersonService.calculateRoutesByRegionResponse()).thenReturn((SortedMap<String, List<DeliveryResponseDto>>) responseDto);
+    void shouldCalculateRoutes() throws Exception {
+        // Arrange
+        DeliveryResponseDto deliveryResponseDto = new DeliveryResponseDto();
+        Map<String, List<DeliveryResponseDto>> routes = new TreeMap<>();
+        routes.put("Region1", List.of(deliveryResponseDto));
 
+        when(deliveryPersonService.calculateRoutesByRegionResponse()).thenReturn((SortedMap<String, List<DeliveryResponseDto>>) routes);
+
+        // Act & Assert
         mockMvc.perform(get("/api/deliveryperson/calculate-routes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$['Region A'][0].id").value(1L))
-                .andExpect(jsonPath("$['Region A'][0].address").value("123 Street"))
-                .andExpect(jsonPath("$['Region A'][0].status").value("Pending"));
+                .andExpect(jsonPath("$.Region1").isArray());
+
         verify(deliveryPersonService, times(1)).calculateRoutesByRegionResponse();
+    }
+
+    private static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

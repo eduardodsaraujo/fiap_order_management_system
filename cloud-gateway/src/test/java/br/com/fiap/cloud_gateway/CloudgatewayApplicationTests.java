@@ -10,4 +10,8 @@ class CloudgatewayApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	public void main() {
+		CloudgatewayApplication.main(new String[] {});
+	}
 }

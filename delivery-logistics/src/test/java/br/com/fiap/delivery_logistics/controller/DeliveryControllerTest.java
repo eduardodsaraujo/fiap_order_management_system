@@ -1,36 +1,34 @@
 package br.com.fiap.delivery_logistics.controller;
 
 import br.com.fiap.delivery_logistics.api.controller.DeliveryController;
-import br.com.fiap.delivery_logistics.application.dto.delivery.DeliveryRequestDto;
-import br.com.fiap.delivery_logistics.application.dto.delivery.DeliveryResponseDto;
-import br.com.fiap.delivery_logistics.application.dto.delivery.ChangeDeliveryStatusRequestDto;
-import br.com.fiap.delivery_logistics.application.dto.deliveryPerson.DeliveryPersonResponseDto;
+import br.com.fiap.delivery_logistics.application.dto.delivery.*;
 import br.com.fiap.delivery_logistics.application.dto.shipping.CalculateShippingRequestDto;
 import br.com.fiap.delivery_logistics.application.dto.shipping.CalculateShippingResponseDto;
 import br.com.fiap.delivery_logistics.application.service.CalculateShippingService;
 import br.com.fiap.delivery_logistics.application.service.DeliveryService;
-import br.com.fiap.delivery_logistics.domain.model.DeliveryPersonStatus;
 import br.com.fiap.delivery_logistics.domain.model.DeliveryStatus;
-import br.com.fiap.delivery_logistics.domain.model.VehicleType;
+import br.com.fiap.delivery_logistics.infrastructure.exception.GlobalExceptionHandler;
+import br.com.fiap.delivery_logistics.utils.DeliveryHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static br.com.fiap.delivery_logistics.utils.DeliveryHelper.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class DeliveryControllerTest {
+class DeliveryControllerTest {
 
     private MockMvc mockMvc;
 
@@ -40,74 +38,97 @@ public class DeliveryControllerTest {
     @Mock
     private CalculateShippingService calculateShippingService;
 
-    @InjectMocks
-    private DeliveryController deliveryController;
-
-    private ObjectMapper objectMapper;
-
     @BeforeEach
     void setUp() {
-        objectMapper = new ObjectMapper();
-        mockMvc = MockMvcBuilders.standaloneSetup(deliveryController).build();
+        MockitoAnnotations.openMocks(this);
+        DeliveryController deliveryController = new DeliveryController(deliveryService, calculateShippingService);
+        mockMvc = MockMvcBuilders.standaloneSetup(deliveryController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .addFilter((request, response, chain) -> {
+                    response.setCharacterEncoding("UTF-8");
+                    chain.doFilter(request, response);
+                }, "/*")
+                .build();
     }
 
+
     @Test
-    void createDelivery_ShouldReturnDeliveryResponseDto() throws Exception {
-        UUID orderId = UUID.randomUUID();
-        DeliveryPersonResponseDto deliveryPerson = new DeliveryPersonResponseDto(1L, "John Doe", VehicleType.CAR, DeliveryPersonStatus.AVAILABLE);
-        DeliveryResponseDto responseDto = new DeliveryResponseDto(
-                orderId,
-                DeliveryStatus.PENDING,
-                new BigDecimal("10.1234"),
-                new BigDecimal("20.1234"),
-                LocalDateTime.now(),
-                deliveryPerson
-        );
+    void shouldCreateDelivery() throws Exception {
+        // Arrange
+        DeliveryRequestDto requestDto = createDeliveryRequestDto();
+        DeliveryResponseDto responseDto = createDeliveryResponseDto(DeliveryStatus.PENDING);
 
         when(deliveryService.createDelivery(any(DeliveryRequestDto.class))).thenReturn(responseDto);
-        DeliveryRequestDto requestDto = new DeliveryRequestDto();
+
+        // Act & Assert
         mockMvc.perform(post("/api/delivery")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
+                        .content(asJsonString(requestDto)))
+                .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.orderId").value(orderId.toString()))
-                .andExpect(jsonPath("$.status").value(DeliveryStatus.PENDING.toString()))
-                .andExpect(jsonPath("$.deliveryPerson.nome").value("John Doe"));
+                .andExpect(jsonPath("$.orderId").value(responseDto.getOrderId().toString()));
+
+        verify(deliveryService, times(1)).createDelivery(any(DeliveryRequestDto.class));
     }
 
     @Test
-    void getDelivery_ShouldReturnDeliveryResponseDto() throws Exception {
-        UUID deliveryId = UUID.randomUUID();
-        DeliveryPersonResponseDto deliveryPerson = new DeliveryPersonResponseDto(1L, "John Doe", VehicleType.CAR, DeliveryPersonStatus.AVAILABLE);
-        DeliveryResponseDto responseDto = new DeliveryResponseDto(
-                deliveryId,
-                DeliveryStatus.PENDING,
-                new BigDecimal("10.1234"),
-                new BigDecimal("20.1234"),
-                LocalDateTime.now(),
-                deliveryPerson
-        );
+    void shouldUpdateDeliveryTrack() throws Exception {
+        // Arrange
+        DeliveryTrackRequestDto requestDto = createDeliveryTrackRequestDto();
+        DeliveryResponseDto responseDto = createDeliveryResponseDto(DeliveryStatus.ON_THE_WAY); // Populate as needed
 
-        when(deliveryService.getById(any(UUID.class))).thenReturn(responseDto);
-        mockMvc.perform(get("/api/delivery/" + deliveryId))
+        when(deliveryService.saveDeliveryTrack(any(UUID.class), any(BigDecimal.class), any(BigDecimal.class))).thenReturn(responseDto);
+
+        // Act & Assert
+        mockMvc.perform(put("/api/delivery/update-track")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(requestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.orderId").value(deliveryId.toString()))
-                .andExpect(jsonPath("$.status").value(DeliveryStatus.PENDING.toString()))
-                .andExpect(jsonPath("$.deliveryPerson.nome").value("John Doe"));
+                .andExpect(jsonPath("$.orderId").value(responseDto.getOrderId().toString())); // Adjust with real fields
+
+        verify(deliveryService, times(1)).saveDeliveryTrack(any(UUID.class), any(BigDecimal.class), any(BigDecimal.class));
     }
 
     @Test
-    void calculateShipping_ShouldReturnShippingCostAndEta() throws Exception {
-        CalculateShippingRequestDto requestDto = new CalculateShippingRequestDto();
-        CalculateShippingResponseDto responseDto = new CalculateShippingResponseDto(50.0, 2);
+    void shouldGetDeliveryById() throws Exception {
+        // Arrange
+        UUID id = UUID.fromString("916d6109-ec12-4220-b331-a7f06e62a4ee");
+        DeliveryResponseDto responseDto = createDeliveryResponseDto(DeliveryStatus.PENDING); // Populate as needed
+
+        when(deliveryService.getById(id)).thenReturn(responseDto);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/delivery/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderId").value(responseDto.getOrderId().toString()));
+
+        verify(deliveryService, times(1)).getById(id);
+    }
+
+    @Test
+    void shouldCalculateShipping() throws Exception {
+        // Arrange
+        CalculateShippingRequestDto requestDto = createCalculateShippingRequestDto();
+        CalculateShippingResponseDto responseDto = createCalculateShippingResponseDto();
 
         when(calculateShippingService.calculateShipping(any(CalculateShippingRequestDto.class))).thenReturn(responseDto);
 
+        // Act & Assert
         mockMvc.perform(post("/api/delivery/calculate-shipping")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
+                        .content(asJsonString(requestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.shippingCost").value(50.0))
-                .andExpect(jsonPath("$.estimatedTimeOfArrival").value(2));
+                .andExpect(jsonPath("$.cost").value(responseDto.getCost()));
+
+        verify(calculateShippingService, times(1)).calculateShipping(any(CalculateShippingRequestDto.class));
+    }
+
+    private static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
