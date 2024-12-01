@@ -2,7 +2,7 @@ package br.com.fiap.order_management.api.controller;
 
 import br.com.fiap.order_management.domain.input.CreateOrderInput;
 import br.com.fiap.order_management.domain.input.UpdateDeliveryAddressInput;
-import br.com.fiap.order_management.domain.input.UpdatePaymentInput;
+import br.com.fiap.order_management.domain.input.PaymentInput;
 import br.com.fiap.order_management.domain.output.OrderOutput;
 import br.com.fiap.order_management.domain.usecase.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,21 +30,21 @@ public class OrderController {
     @PostMapping
     @Operation(summary = "Create a new order", description = "Create a new order with the provided details")
     public ResponseEntity<OrderOutput> create(@RequestBody CreateOrderInput input) {
-        OrderOutput orderOutput = createOrderUseCase.create(input);
+        OrderOutput orderOutput = createOrderUseCase.execute(input);
         return ResponseEntity.ok(orderOutput);
     }
 
     @PutMapping(value = "/{orderId}/delivery-address")
     @Operation(summary = "Update order delivery address", description = "Update an delivery address for the specified order")
     public ResponseEntity<OrderOutput> updateDeliveryAddress(@PathVariable UUID orderId, @RequestBody UpdateDeliveryAddressInput input) {
-        OrderOutput orderOutput = updateOrderDeliveryAddressUseCase.update(orderId, input);
+        OrderOutput orderOutput = updateOrderDeliveryAddressUseCase.execute(orderId, input);
         return ResponseEntity.ok(orderOutput);
     }
 
-    @PutMapping(value = "/{orderId}/payment")
-    @Operation(summary = "Update order payment", description = "Update an payment for the specified order")
-    public ResponseEntity<OrderOutput> requestPayment(@PathVariable UUID orderId, @RequestBody UpdatePaymentInput input) {
-        OrderOutput orderOutput = orderCheckoutUseCase.update(orderId, input);
+    @PutMapping(value = "/{orderId}/checkout")
+    @Operation(summary = "Checkout order", description = "Checkout the specified order")
+    public ResponseEntity<OrderOutput> checkout(@PathVariable UUID orderId, @RequestBody PaymentInput input) {
+        OrderOutput orderOutput = orderCheckoutUseCase.execute(orderId, input);
         return ResponseEntity.ok(orderOutput);
     }
 
@@ -58,14 +58,14 @@ public class OrderController {
     @GetMapping("/{orderId}")
     @Operation(summary = "Get order by ID", description = "Retrieve order details by ID")
     public ResponseEntity<OrderOutput> findById(@PathVariable UUID orderId) throws Exception {
-        OrderOutput orderOutput = findOrderByIdUseCase.findById(orderId);
+        OrderOutput orderOutput = findOrderByIdUseCase.execute(orderId);
         return ResponseEntity.ok(orderOutput);
     }
 
     @GetMapping("/by-customer/{customerId}")
     @Operation(summary = "Get all order by customer", description = "Retrieve all order for the specified customer")
     public ResponseEntity<List<OrderOutput>> findAllByCustomerId(@PathVariable long customerId) {
-        List<OrderOutput> ordersOutput = findAllOrdersByCustomerIdUseCase.findAll(customerId);
+        List<OrderOutput> ordersOutput = findAllOrdersByCustomerIdUseCase.execute(customerId);
         return ResponseEntity.ok(ordersOutput);
     }
 

@@ -29,14 +29,14 @@ public class CreateOrderUseCase {
     private final ProductGateway productGateway;
 
     @Transactional
-    public OrderOutput create(CreateOrderInput input) {
+    public OrderOutput execute(CreateOrderInput input) {
         Customer customer = customerGateway.findById(input.getCustomerId());
         List<Product> products = productGateway.findAllByIds(input.getItems().stream().map(OrderItemInput::getProductId).toList());
 
         List<OrderItem> items = new ArrayList<>();
         for (OrderItemInput itemInput : input.getItems()) {
             Product product = products.stream().filter(p -> p.getId() == itemInput.getProductId()).findFirst()
-                    .orElseThrow(() -> new OrderException("Order not found"));
+                    .orElseThrow(() -> new OrderException("Product not found"));
 
             items.add(OrderItem.builder()
                     .id(UUID.randomUUID())

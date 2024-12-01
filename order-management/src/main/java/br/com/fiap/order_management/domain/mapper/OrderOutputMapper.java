@@ -74,6 +74,7 @@ public class OrderOutputMapper {
                 .code(product.getCode())
                 .description(product.getDescription())
                 .price(product.getPrice())
+                .weight(product.getWeight())
                 .build();
     }
 

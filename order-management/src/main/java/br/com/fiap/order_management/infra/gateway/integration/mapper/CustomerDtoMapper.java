@@ -10,6 +10,7 @@ public class CustomerDtoMapper {
                 .id(customerDto.getId())
                 .name(customerDto.getName())
                 .email(customerDto.getEmail())
+                .phone(customerDto.getPhone())
                 .build();
     }
 

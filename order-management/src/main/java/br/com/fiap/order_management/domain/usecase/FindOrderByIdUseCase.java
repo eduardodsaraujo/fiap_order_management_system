@@ -15,7 +15,7 @@ public class FindOrderByIdUseCase {
 
     private final OrderGateway orderGateway;
 
-    public OrderOutput findById(UUID orderId) {
+    public OrderOutput execute(UUID orderId) {
         Order order = orderGateway.findById(orderId);
 
         return OrderOutputMapper.toOrderOutput(order);

@@ -2,13 +2,14 @@ package br.com.fiap.order_management.domain.output;
 
 import br.com.fiap.order_management.domain.model.OrderStatus;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
+@Data
 @Builder
 public class OrderOutput {
 

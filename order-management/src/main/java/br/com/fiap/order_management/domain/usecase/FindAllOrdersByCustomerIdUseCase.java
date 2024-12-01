@@ -15,7 +15,7 @@ public class FindAllOrdersByCustomerIdUseCase {
 
     private final OrderGateway orderGateway;
 
-    public List<OrderOutput> findAll(long customerId) {
+    public List<OrderOutput> execute(long customerId) {
         List<Order> orders = orderGateway.findAllByCustomerId(customerId);
 
         return orders.stream().map(OrderOutputMapper::toOrderOutput).toList();

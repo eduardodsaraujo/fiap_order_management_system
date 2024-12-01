@@ -1,13 +1,13 @@
 package br.com.fiap.order_management.domain.usecase;
 
+import br.com.fiap.order_management.domain.gateway.OrderGateway;
 import br.com.fiap.order_management.domain.gateway.PaymentGateway;
-import br.com.fiap.order_management.domain.gateway.ProductGateway;
-import br.com.fiap.order_management.domain.input.UpdatePaymentInput;
+import br.com.fiap.order_management.domain.gateway.StockProductGateway;
+import br.com.fiap.order_management.domain.input.PaymentInput;
 import br.com.fiap.order_management.domain.mapper.OrderOutputMapper;
 import br.com.fiap.order_management.domain.model.Order;
 import br.com.fiap.order_management.domain.model.OrderItem;
 import br.com.fiap.order_management.domain.model.Payment;
-import br.com.fiap.order_management.domain.gateway.OrderGateway;
 import br.com.fiap.order_management.domain.output.OrderOutput;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,17 +21,17 @@ public class OrderCheckoutUseCase {
 
     private final OrderGateway orderGateway;
     private final PaymentGateway paymentGateway;
-    private final ProductGateway productGateway;
+    private final StockProductGateway stockProductGateway;
 
     @Transactional
-    public OrderOutput update(UUID orderId, UpdatePaymentInput input) {
+    public OrderOutput execute(UUID orderId, PaymentInput input) {
         Order order = orderGateway.findById(orderId);
         order.validateIsOpen();
         order.validateDeliveryAddress();
 
         // Process product stock
         for (OrderItem item : order.getItems()) {
-            productGateway.decreaseStock(item.getProduct().getId(), item.getQuantity());
+            stockProductGateway.decreaseStock(item.getProduct().getId(), item.getQuantity());
         }
 
         // Request payment

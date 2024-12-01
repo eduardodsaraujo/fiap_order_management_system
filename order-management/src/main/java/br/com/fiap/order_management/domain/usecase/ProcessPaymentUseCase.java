@@ -1,9 +1,6 @@
 package br.com.fiap.order_management.domain.usecase;
 
-import br.com.fiap.order_management.domain.gateway.DeliveryGateway;
-import br.com.fiap.order_management.domain.gateway.OrderGateway;
-import br.com.fiap.order_management.domain.gateway.PaymentGateway;
-import br.com.fiap.order_management.domain.gateway.ProductGateway;
+import br.com.fiap.order_management.domain.gateway.*;
 import br.com.fiap.order_management.domain.model.Order;
 import br.com.fiap.order_management.domain.model.OrderItem;
 import br.com.fiap.order_management.domain.model.PaymentReceipt;
@@ -21,7 +18,7 @@ public class ProcessPaymentUseCase {
     private final OrderGateway orderGateway;
     private final PaymentGateway paymentGateway;
     private final DeliveryGateway deliveryGateway;
-    private final ProductGateway productGateway;
+    private final StockProductGateway stockProductGateway;
 
     @Transactional
     public void execute(UUID requestPaymentId) {
@@ -32,18 +29,19 @@ public class ProcessPaymentUseCase {
         }
 
         PaymentReceipt paymentReceipt = paymentGateway.getPayment(requestPaymentId);
-        if (paymentReceipt.getStatus().equals("PAID")) {
-            order.processPayment(paymentReceipt);
+        order.processPayment(paymentReceipt);
 
+        if (paymentReceipt.getStatus().equals("PAID")) {
             deliveryGateway.createDelivery(order.getId(), order.getDeliveryAddress().getPostalCode());
             order.updateAwaitingShipment();
         } else {
             order.cancel();
 
             for (OrderItem item : order.getItems()) {
-                productGateway.increaseStock(item.getProduct().getId(), item.getQuantity());
+                stockProductGateway.increaseStock(item.getProduct().getId(), item.getQuantity());
             }
         }
+
         orderGateway.save(order);
     }
 

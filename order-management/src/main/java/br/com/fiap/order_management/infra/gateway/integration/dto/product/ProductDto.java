@@ -1,8 +1,11 @@
 package br.com.fiap.order_management.infra.gateway.integration.dto.product;
 
-import lombok.Getter;
+import lombok.*;
 
-@Getter
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductDto {
 
     private long id;

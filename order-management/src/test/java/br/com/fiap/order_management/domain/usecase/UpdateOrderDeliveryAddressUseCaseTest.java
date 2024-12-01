@@ -4,63 +4,76 @@ import br.com.fiap.order_management.domain.gateway.AddressGateway;
 import br.com.fiap.order_management.domain.gateway.DeliveryGateway;
 import br.com.fiap.order_management.domain.gateway.OrderGateway;
 import br.com.fiap.order_management.domain.input.UpdateDeliveryAddressInput;
-import br.com.fiap.order_management.domain.mapper.OrderOutputMapper;
 import br.com.fiap.order_management.domain.model.DeliveryAddress;
 import br.com.fiap.order_management.domain.model.Order;
 import br.com.fiap.order_management.domain.output.OrderOutput;
+import br.com.fiap.order_management.util.CustomerHelper;
+import br.com.fiap.order_management.util.OrderHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 public class UpdateOrderDeliveryAddressUseCaseTest {
 
-    @Mock
-    private OrderGateway orderGateway;
-
-    @Mock
-    private AddressGateway addressGateway;
-
-    @Mock
-    private DeliveryGateway deliveryGateway;
-
-    @InjectMocks
     private UpdateOrderDeliveryAddressUseCase updateOrderDeliveryAddressUseCase;
 
-    private UUID orderId;
-    private Order order;
-    private DeliveryAddress deliveryAddress;
-    private UpdateDeliveryAddressInput input;
+    @Mock
+    private OrderGateway orderGateway;
+    @Mock
+    private AddressGateway addressGateway;
+    @Mock
+    private DeliveryGateway deliveryGateway;
+    AutoCloseable openMocks;
 
     @BeforeEach
-    void setUp() {
-        orderId = UUID.randomUUID();
-        order = mock(Order.class);
-        deliveryAddress = mock(DeliveryAddress.class);
-        input = UpdateDeliveryAddressInput.builder()
-                .deliveryAddressId(1L)
-                .build();
-
-        // Mockando comportamentos
-        when(orderGateway.findById(orderId)).thenReturn(order);
-        when(addressGateway.findAddressByCustomerIdAndAddressId(anyLong(), anyLong())).thenReturn(deliveryAddress);
-        when(deliveryGateway.calculateShipping(any(), anyDouble())).thenReturn(10.0);
+    void setup() {
+        openMocks = MockitoAnnotations.openMocks(this);
+        updateOrderDeliveryAddressUseCase = new UpdateOrderDeliveryAddressUseCase(orderGateway, addressGateway, deliveryGateway);
     }
 
     @Test
-    void update_ShouldUpdateOrderWithNewDeliveryAddressAndShipping() {
-        OrderOutput orderOutput = updateOrderDeliveryAddressUseCase.update(orderId, input);
+    void shouldUpdateOrderDeliveryAddress() {
+        // Arrange
+        DeliveryAddress deliveryAddress = CustomerHelper.createDeliveryAddress();
+
+        UUID orderId = UUID.randomUUID();
+        Order order = OrderHelper.createOrder();
+        order.setId(orderId);
+
+        UpdateDeliveryAddressInput input = new UpdateDeliveryAddressInput(1L);
+
+        when(addressGateway.findAddressByCustomerIdAndAddressId(anyLong(), anyLong())).thenReturn(deliveryAddress);
+        when(deliveryGateway.calculateShipping(anyString(), anyDouble())).thenReturn(10.0);
+        when(orderGateway.findById(any(UUID.class))).thenReturn(order);
+        when(orderGateway.save(any(Order.class))).thenReturn(order);
+
+        // Act
+        OrderOutput updatedOrder = updateOrderDeliveryAddressUseCase.execute(orderId, input);
+
+        // Assert
         verify(addressGateway, times(1)).findAddressByCustomerIdAndAddressId(anyLong(), anyLong());
-        verify(deliveryGateway, times(1)).calculateShipping(any(), anyDouble());
-        verify(order, times(1)).updateDeliveryAddress(any(DeliveryAddress.class), eq(10.0));
-        verify(orderGateway, times(1)).save(order);
-        assertNotNull(orderOutput);
+        verify(deliveryGateway, times(1)).calculateShipping(anyString(), anyDouble());
+        verify(orderGateway, times(1)).findById(any(UUID.class));
+        verify(orderGateway, times(1)).save(any(Order.class));
+
+        assertThat(updatedOrder.getId()).isEqualTo(order.getId());
+        assertThat(updatedOrder.getStatus()).isEqualTo(order.getStatus());
+        assertThat(updatedOrder.getItemTotal()).isEqualTo(order.getItemTotal());
+        assertThat(updatedOrder.getShippingValue()).isEqualTo(order.getShippingValue());
+        assertThat(updatedOrder.getTotal()).isEqualTo(order.getTotal());
+        assertThat(updatedOrder.getTotalWeight()).isEqualTo(order.getTotalWeight());
+        assertThat(updatedOrder.getCustomer().getId()).isEqualTo(order.getCustomer().getId());
+        assertThat(updatedOrder.getDeliveryAddress().getId()).isEqualTo(order.getDeliveryAddress().getId());
+        assertThat(updatedOrder.getPayment()).isEqualTo(order.getPayment());
+        assertThat(updatedOrder.getItems()).hasSize(1);
     }
+
 }

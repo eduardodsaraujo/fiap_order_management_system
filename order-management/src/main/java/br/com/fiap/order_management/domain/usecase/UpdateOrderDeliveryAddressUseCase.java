@@ -21,7 +21,7 @@ public class UpdateOrderDeliveryAddressUseCase {
     private final AddressGateway addressGateway;
     private final DeliveryGateway deliveryGateway;
 
-    public OrderOutput update(UUID orderId, UpdateDeliveryAddressInput input) {
+    public OrderOutput execute(UUID orderId, UpdateDeliveryAddressInput input) {
         Order order = orderGateway.findById(orderId);
         order.validateIsOpen();
 

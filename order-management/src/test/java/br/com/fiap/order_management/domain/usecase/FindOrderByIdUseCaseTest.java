@@ -1,56 +1,56 @@
 package br.com.fiap.order_management.domain.usecase;
 
 import br.com.fiap.order_management.domain.gateway.OrderGateway;
-import br.com.fiap.order_management.domain.mapper.OrderOutputMapper;
 import br.com.fiap.order_management.domain.model.Order;
 import br.com.fiap.order_management.domain.output.OrderOutput;
-import br.com.fiap.order_management.util.OrderOutputTestUtil;
+import br.com.fiap.order_management.util.OrderHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class FindOrderByIdUseCaseTest {
 
-    @Mock
-    private OrderGateway orderGateway;
-
-    @Mock
-    private OrderOutputMapper orderOutputMapper;
-
-    @InjectMocks
     private FindOrderByIdUseCase findOrderByIdUseCase;
 
-    private UUID orderId;
+    @Mock
+    private OrderGateway orderGateway;
+    AutoCloseable openMocks;
+
 
     @BeforeEach
-    void setUp() {
-        orderId = UUID.randomUUID();
+    void setup() {
+        openMocks = MockitoAnnotations.openMocks(this);
+        findOrderByIdUseCase = new FindOrderByIdUseCase(orderGateway);
     }
 
     @Test
-    void findById_ShouldReturnOrderOutput() {
-        Order order = Order.builder()
-                .id(orderId)
-                .orderDate(java.time.LocalDate.now())
-                .status(br.com.fiap.order_management.domain.model.OrderStatus.NEW)
-                .build();
+    void shouldFindOrderByIdUseCase() {
+        // Arrange
+        UUID orderId = UUID.randomUUID();
+        Order order = OrderHelper.createOrder();
+        order.setId(orderId);
 
-        when(orderGateway.findById(orderId)).thenReturn(order);
+        when(orderGateway.findById(any(UUID.class))).thenReturn(order);
 
-        OrderOutput expectedOrderOutput = OrderOutputTestUtil.createOrderOutput();
-        when(orderOutputMapper.toOrderOutput(order)).thenReturn(expectedOrderOutput);
+        OrderOutput foundOrder = findOrderByIdUseCase.execute(orderId);
 
-        OrderOutput orderOutput = findOrderByIdUseCase.findById(orderId);
-
-        assertNotNull(orderOutput);
-        assertEquals(expectedOrderOutput, orderOutput);
+        assertThat(foundOrder).isInstanceOf(OrderOutput.class).isNotNull();
+        assertThat(foundOrder.getId()).isEqualTo(order.getId());
+        assertThat(foundOrder.getStatus()).isEqualTo(order.getStatus());
+        assertThat(foundOrder.getItemTotal()).isEqualTo(order.getItemTotal());
+        assertThat(foundOrder.getShippingValue()).isEqualTo(order.getShippingValue());
+        assertThat(foundOrder.getTotal()).isEqualTo(order.getTotal());
+        assertThat(foundOrder.getTotalWeight()).isEqualTo(order.getTotalWeight());
+        assertThat(foundOrder.getCustomer().getId()).isEqualTo(order.getCustomer().getId());
+        assertThat(foundOrder.getDeliveryAddress()).isEqualTo(order.getDeliveryAddress());
+        assertThat(foundOrder.getPayment()).isEqualTo(order.getPayment());
+        assertThat(foundOrder.getItems().size()).isEqualTo(1);
     }
 }

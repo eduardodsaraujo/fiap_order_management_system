@@ -1,0 +1,155 @@
+version: '3'
+
+services:
+
+  eureka:
+    build:
+      context: ../images
+      dockerfile: ../images/EurekaDockerfile
+    container_name: order_management_eureka
+    ports:
+      - "8761:8761"
+
+  gateway:
+    build:
+      context: ../images
+      dockerfile: ../images/GatewayDockerfile
+    container_name: order_management_gateway
+    environment:
+      - EUREKA_HOST=eureka
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka:
+        condition: service_started
+
+  ########################################################################################################################
+  # CUSTOMER MANAGEMENT MICROSERVICE
+  ########################################################################################################################
+
+  customer_management:
+    build:
+      context: ../images
+      dockerfile: ../images/CustomerDockerfile
+    container_name: customer_management
+    depends_on:
+      - customer_db
+      - eureka
+    environment:
+      - EUREKA_HOST=eureka
+      - DATABASE_HOST=customer_db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=fiap_customer_management
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=123456
+
+  customer_db:
+    image: postgres:17
+    container_name: customer_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: fiap_customer_management
+
+  ########################################################################################################################
+  # PRODUCT MANAGEMENT MICROSERVICE
+  ########################################################################################################################
+
+  product_management:
+    build:
+      context: ../images
+      dockerfile: ProductDockerfile
+    container_name: product_management
+    depends_on:
+      - product_import
+      - product_db
+      - eureka
+    environment:
+      - EUREKA_HOST=eureka
+      - DATABASE_HOST=product_db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=fiap_product_management
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=123456
+
+  product_import:
+    build:
+      context: ../images
+      dockerfile: ProductImportDockerfile
+    container_name: product_import
+    depends_on:
+      - product_db
+      - eureka
+    environment:
+      - EUREKA_HOST=eureka
+      - DATABASE_HOST=product_db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=fiap_product_management
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=123456
+
+  product_db:
+    image: postgres:17
+    container_name: product_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: fiap_product_management
+
+  ########################################################################################################################
+  # ORDER MANAGEMENT MICROSERVICE
+  ########################################################################################################################
+
+  order_management:
+    build:
+      context: ../images
+      dockerfile: ../images/OrderDockerfile
+    container_name: order_management
+    depends_on:
+      - order_db
+      - eureka
+    environment:
+      - EUREKA_HOST=eureka
+      - DATABASE_HOST=order_db
+      - DATABASE_PORT=27017
+      - DATABASE_NAME=fiap_order_management
+      - DATABASE_USER=admin
+      - DATABASE_PASSWORD=123456
+
+  order_db:
+    image: mongo
+    container_name: order_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+      MONGO_INITDB_DATABASE: fiap_order_management
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  ########################################################################################################################
+  # ORDER MANAGEMENT MICROSERVICE
+  ########################################################################################################################
+
+  delivery-logistics:
+    build:
+      context: ../images
+      dockerfile: DeliveryDockerfile
+    container_name: delivery-logistics
+    depends_on:
+      - delivery_db
+      - eureka
+    environment:
+      - EUREKA_HOST=eureka
+      - DATABASE_HOST=delivery_db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=fiap_delivery_logistics
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=123456
+
+  delivery_db:
+    image: postgres:17
+    container_name: delivery_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: fiap_delivery_logistics

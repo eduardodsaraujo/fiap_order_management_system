@@ -6,10 +6,6 @@ import java.util.List;
 
 public interface ProductGateway {
 
-    void increaseStock(long productId, double quantity);
-
-    void decreaseStock(long productId, double quantity);
-
     List<Product> findAllByIds(List<Long> productsIds);
 
 }

@@ -18,18 +18,6 @@ public class ProductIntegrationGateway implements ProductGateway {
     private final ProductWsGateway productWsGateway;
 
     @Override
-    public void increaseStock(long productId, double quantity) {
-        ProductStockRequestDto requestDto = new ProductStockRequestDto(productId, quantity);
-        productWsGateway.increaseStock(requestDto);
-    }
-
-    @Override
-    public void decreaseStock(long productId, double quantity) {
-        ProductStockRequestDto requestDto = new ProductStockRequestDto(productId, quantity);
-        productWsGateway.decreaseStock(requestDto);
-    }
-
-    @Override
     public List<Product> findAllByIds(List<Long> productsIds) {
         List<ProductDto> productsDto = productWsGateway.findAllByIds(productsIds);
         return productsDto.stream().map(ProductDtoMapper::toDomain).toList();
