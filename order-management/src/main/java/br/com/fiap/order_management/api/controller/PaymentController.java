@@ -17,7 +17,7 @@ public class PaymentController {
     private final ProcessPaymentUseCase processPaymentUseCase;
 
     @PostMapping("/{requestPaymentId}")
-    public void notifyPayment(@PathVariable UUID requestPaymentId){
+    public void notifyPayment(@PathVariable UUID requestPaymentId) throws Exception {
         processPaymentUseCase.execute(requestPaymentId);
     }
 

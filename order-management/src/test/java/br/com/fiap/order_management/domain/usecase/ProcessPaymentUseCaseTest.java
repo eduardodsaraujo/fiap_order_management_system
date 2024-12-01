@@ -45,7 +45,7 @@ public class ProcessPaymentUseCaseTest {
     }
 
     @Test
-    public void shouldProcessPayment() {
+    public void shouldProcessPayment() throws Exception {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         PaymentReceipt paymentReceipt = new PaymentReceipt(paymentId, LocalDateTime.now(), "PAID", UUID.randomUUID().toString());
@@ -75,7 +75,7 @@ public class ProcessPaymentUseCaseTest {
     }
 
     @Test
-    public void shouldCancelOrder_WhenProcessPayment_PaymentRejected() {
+    public void shouldCancelOrder_WhenProcessPayment_PaymentRejected() throws Exception {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         PaymentReceipt paymentReceipt = new PaymentReceipt(paymentId, LocalDateTime.now(), "REJECTED", UUID.randomUUID().toString());

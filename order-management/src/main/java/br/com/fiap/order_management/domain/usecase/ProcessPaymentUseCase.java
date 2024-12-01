@@ -21,7 +21,7 @@ public class ProcessPaymentUseCase {
     private final StockProductGateway stockProductGateway;
 
     @Transactional
-    public void execute(UUID requestPaymentId) {
+    public void execute(UUID requestPaymentId) throws Exception {
         Order order = orderGateway.findByPaymentId(requestPaymentId);
 
         if (order.getPayment().getStatus() != null) {
