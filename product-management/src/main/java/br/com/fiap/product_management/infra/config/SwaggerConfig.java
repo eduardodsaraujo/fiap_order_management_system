@@ -16,7 +16,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .components(new Components())
                 .info(new Info()
-                        .title("API Ptoduct Management - FIAP")
+                        .title("API Product Management - FIAP")
                         .description("Spring Boot API for product management.")
                         .version("v1")
                         .contact(new Contact()

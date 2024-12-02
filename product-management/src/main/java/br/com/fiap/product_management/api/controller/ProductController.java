@@ -7,6 +7,7 @@ import br.com.fiap.product_management.application.service.ProductService;
 import br.com.fiap.product_management.domain.model.Product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class ProductController {
 
     @PostMapping
     @Operation(summary = "Create a new product", description = "Create a new product with the provided details")
-    public ResponseEntity<ProductDto> create(@RequestBody CreateProductInput input) {
+    public ResponseEntity<ProductDto> create(@Valid @RequestBody CreateProductInput input) {
         Product product = productService.create(input);
         return ResponseEntity.ok(ProductDto.toDto(product));
     }
@@ -67,9 +68,9 @@ public class ProductController {
 
     @GetMapping
     @Operation(summary = "Get all products by name", description = "Retrieve all products by name")
-    public ResponseEntity<Page<ProductDto>> findAllByName(@RequestParam String name, Pageable pageable) {
+    public ResponseEntity<List<ProductDto>> findAllByName(@RequestParam String name, Pageable pageable) {
         Page<Product> products = productService.findAllByName(name, pageable);
-        return ResponseEntity.ok(products.map(ProductDto::toDto));
+        return ResponseEntity.ok(ProductDto.toListDto(products.getContent()));
     }
 
 }

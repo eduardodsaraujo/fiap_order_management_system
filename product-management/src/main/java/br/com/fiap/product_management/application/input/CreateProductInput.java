@@ -3,11 +3,12 @@ package br.com.fiap.product_management.application.input;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
-@Getter
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateProductInput {
 
     @NotBlank(message = "Code is required.")
