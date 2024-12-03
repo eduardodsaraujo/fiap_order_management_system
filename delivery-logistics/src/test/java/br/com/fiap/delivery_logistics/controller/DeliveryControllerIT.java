@@ -5,28 +5,46 @@ import br.com.fiap.delivery_logistics.application.dto.delivery.ChangeDeliverySta
 import br.com.fiap.delivery_logistics.application.dto.delivery.DeliveryTrackRequestDto;
 import br.com.fiap.delivery_logistics.application.dto.shipping.CalculateShippingRequestDto;
 import br.com.fiap.delivery_logistics.domain.model.DeliveryStatus;
+import br.com.fiap.delivery_logistics.infrastructure.client.OrderManagementClient;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.RestAssured;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@AutoConfigureTestDatabase
 class DeliveryControllerIT {
 
     @LocalServerPort
     private int port;
+
+    @MockBean
+    private OrderManagementClient orderManagementClient; // Mockando o client
 
     @BeforeEach
     public void setup() {
@@ -61,6 +79,8 @@ class DeliveryControllerIT {
                 .status(DeliveryStatus.DELIVERED)
                 .build();
 
+        when(orderManagementClient.updateDelivered(statusRequest.getDeliveryId())).thenReturn(ResponseEntity.ok().build());
+
         given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(statusRequest)
@@ -68,7 +88,7 @@ class DeliveryControllerIT {
                 .put("/api/delivery/{id}", deliveryId)
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("status", equalTo("DELIVERED"));  // Ajuste conforme o status esperado
+                .body("status", equalTo("DELIVERED"));
     }
 
     @Test
@@ -98,8 +118,8 @@ class DeliveryControllerIT {
                 .post("/api/delivery/calculate-shipping")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("shippingCost", equalTo(100.0))  // Ajuste conforme o valor esperado
-                .body("estimatedDeliveryTime", equalTo("3 days"));  // Ajuste conforme o valor esperado
+                .body("cost", equalTo(1001.0F))
+                .body("deliveryTime", equalTo(2));
     }
 
     @Test
@@ -119,7 +139,8 @@ class DeliveryControllerIT {
                 .put("/api/delivery/update-track")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("latitude", equalTo(trackRequest.getLatitude()))
-                .body("longitude", equalTo(trackRequest.getLongitude()));
+                .body("latitude", equalTo(trackRequest.getLatitude().floatValue()))
+                .body("longitude", equalTo(trackRequest.getLongitude().floatValue()));
     }
 }
+

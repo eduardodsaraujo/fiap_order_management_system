@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeliveryPersonRequestDto {
-    private String nome;
+    private String name;
     private VehicleType vehicleType;
 }

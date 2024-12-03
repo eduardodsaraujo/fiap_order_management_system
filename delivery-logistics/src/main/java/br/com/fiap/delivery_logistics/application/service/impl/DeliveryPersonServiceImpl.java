@@ -30,7 +30,7 @@ public class DeliveryPersonServiceImpl implements DeliveryPersonService {
     private final DeliveryRepository deliveryRepository;
 
     public DeliveryPersonResponseDto createDeliveryPerson(DeliveryPersonRequestDto deliveryPersonRequestDto) {
-        DeliveryPerson deliveryPerson = new DeliveryPerson(deliveryPersonRequestDto.getNome(),
+        DeliveryPerson deliveryPerson = new DeliveryPerson(deliveryPersonRequestDto.getName(),
                 deliveryPersonRequestDto.getVehicleType());
         deliveryPerson.setStatus(DeliveryPersonStatus.AVAILABLE);
         DeliveryPerson savedDeliveryPerson = deliveryPersonRepository.save(deliveryPerson);

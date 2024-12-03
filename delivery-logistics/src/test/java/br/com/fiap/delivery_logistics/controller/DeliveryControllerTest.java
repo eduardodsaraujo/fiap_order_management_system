@@ -2,23 +2,31 @@ package br.com.fiap.delivery_logistics.controller;
 
 import br.com.fiap.delivery_logistics.api.controller.DeliveryController;
 import br.com.fiap.delivery_logistics.application.dto.delivery.*;
+import br.com.fiap.delivery_logistics.application.dto.deliveryPerson.DeliveryPersonResponseDto;
 import br.com.fiap.delivery_logistics.application.dto.shipping.CalculateShippingRequestDto;
 import br.com.fiap.delivery_logistics.application.dto.shipping.CalculateShippingResponseDto;
 import br.com.fiap.delivery_logistics.application.service.CalculateShippingService;
 import br.com.fiap.delivery_logistics.application.service.DeliveryService;
 import br.com.fiap.delivery_logistics.domain.model.DeliveryStatus;
+import br.com.fiap.delivery_logistics.infrastructure.exception.DeliveryException;
 import br.com.fiap.delivery_logistics.infrastructure.exception.GlobalExceptionHandler;
-import br.com.fiap.delivery_logistics.utils.DeliveryHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static br.com.fiap.delivery_logistics.utils.DeliveryHelper.*;
@@ -44,10 +52,7 @@ class DeliveryControllerTest {
         DeliveryController deliveryController = new DeliveryController(deliveryService, calculateShippingService);
         mockMvc = MockMvcBuilders.standaloneSetup(deliveryController)
                 .setControllerAdvice(new GlobalExceptionHandler())
-                .addFilter((request, response, chain) -> {
-                    response.setCharacterEncoding("UTF-8");
-                    chain.doFilter(request, response);
-                }, "/*")
+                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .build();
     }
 
@@ -131,4 +136,85 @@ class DeliveryControllerTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    void shouldGetAllDeliveries() throws Exception {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+        var delivery = createDeliveryResponseDto(DeliveryStatus.PENDING);
+        var delivery2 = createDeliveryResponseDto(DeliveryStatus.PENDING);
+
+        List<DeliveryResponseDto> deliveryList = Arrays.asList(delivery, delivery2);
+
+        Page<DeliveryResponseDto> deliveryPage =
+                new PageImpl<>(deliveryList, pageable, deliveryList.size());
+
+        when(deliveryService.findAllDeliveries(any(PageRequest.class))).thenReturn(deliveryPage);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/delivery")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].orderId").value(deliveryPage.getContent().get(0).getOrderId().toString()));
+
+        verify(deliveryService, times(1)).findAllDeliveries(any(Pageable.class));
+    }
+
+    @Test
+    void shouldUpdateDeliveryStatus() throws Exception {
+        // Arrange
+        UUID deliveryId = UUID.randomUUID();
+        ChangeDeliveryStatusRequestDto requestDto = new ChangeDeliveryStatusRequestDto(deliveryId, DeliveryStatus.PENDING); // Example payload
+        DeliveryResponseDto responseDto = createDeliveryResponseDto(DeliveryStatus.DELIVERED);
+
+        when(deliveryService.changeDeliveryStatus(eq(deliveryId), any(ChangeDeliveryStatusRequestDto.class))).thenReturn(responseDto);
+
+        // Act & Assert
+        mockMvc.perform(put("/api/delivery/{id}", deliveryId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(requestDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderId").value(responseDto.getOrderId().toString()))
+                .andExpect(jsonPath("$.status").value(responseDto.getStatus().toString()));
+
+        verify(deliveryService, times(1)).changeDeliveryStatus(eq(deliveryId), any(ChangeDeliveryStatusRequestDto.class));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenOrderIdNotProvided() throws Exception {
+        // Arrange
+        DeliveryTrackRequestDto requestDto = new DeliveryTrackRequestDto(null, new BigDecimal("40.7128"), new BigDecimal("-74.0060"));
+
+        // Act & Assert
+        mockMvc.perform(put("/api/delivery/update-track")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(requestDto)))
+                .andExpect(status().isBadRequest())
+                .andDo(print())
+                .andExpect(jsonPath("$.message").value("Validation error"));
+
+        verify(deliveryService, never()).saveDeliveryTrack(any(), any(), any());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenOrderIdDoesNotExist() throws Exception {
+        // Arrange
+        UUID nonExistentOrderId = UUID.randomUUID();
+
+        when(deliveryService.getById(nonExistentOrderId))
+                .thenThrow(new DeliveryException("Delivery not found."));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/delivery/{id}", nonExistentOrderId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is5xxServerError())
+                .andExpect(jsonPath("$.message").value("Delivery not found."));
+
+        verify(deliveryService, times(1)).getById(nonExistentOrderId);
+    }
+
+
 }

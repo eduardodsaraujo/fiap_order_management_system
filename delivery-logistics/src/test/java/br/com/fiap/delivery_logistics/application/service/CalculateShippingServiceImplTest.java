@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CalculateShippingServiceImplTest {
@@ -47,14 +49,15 @@ class CalculateShippingServiceImplTest {
     void shouldEstimateDeliveryTimeBasedOnRegion() {
         // Arrange
         var requestDto = new CalculateShippingRequestDto();
-        requestDto.setDestinationZipCode("24567123"); // Região 2
         requestDto.setWeightProducts(5);
 
-        // Act
-        var response = calculateShippingService.calculateShipping(requestDto);
-
-        // Assert
-        assertThat(response.getDeliveryTime()).isEqualTo(4); // baseDeliveryTime (2) + região (2)
+        var postcodes = Arrays.asList("04567123","14567123","24567123","34567123","44567123","54567123","64567123","74567123","84567123","94567123");
+        var answers = Arrays.asList(2,2,4,5,6,7,8,6,5,6);
+        for(int i =0 ; i < postcodes.size(); i++ ){
+            requestDto.setDestinationZipCode(postcodes.get(i));
+            var response = calculateShippingService.calculateShipping(requestDto);
+            assertThat(response.getDeliveryTime()).isEqualTo(answers.get(i));
+        }
     }
 
     @Test

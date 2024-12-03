@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,7 +94,7 @@ class DeliveryPersonRepositoryIT {
         List<DeliveryPerson> deliveryPersons = deliveryPersonRepository.findAll();
 
         // Assert
-        assertThat(deliveryPersons).hasSize(2);
+        assertThat(deliveryPersons).hasSize(3);
     }
 
     @Test
@@ -111,8 +112,8 @@ class DeliveryPersonRepositoryIT {
 
         // Assert
         assertThat(availablePersons)
-                .hasSize(1)
+                .hasSize(2)
                 .extracting(DeliveryPerson::getName)
-                .containsExactly("Juninho");
+                .containsExactly("Carlos", "Juninho");
     }
 }

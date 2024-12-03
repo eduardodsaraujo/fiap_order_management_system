@@ -30,10 +30,6 @@ public class Delivery {
     @JoinColumn(name = "deliverypersonid")
     private DeliveryPerson deliveryPerson;
 
-    public Delivery(UUID orderId, DeliveryStatus status) {
-        this.orderId = orderId;
-        this.status = status;
-    }
 
 }
 

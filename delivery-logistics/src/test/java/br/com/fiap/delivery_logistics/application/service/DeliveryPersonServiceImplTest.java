@@ -8,13 +8,11 @@ import br.com.fiap.delivery_logistics.domain.model.*;
 import br.com.fiap.delivery_logistics.domain.repository.DeliveryPersonRepository;
 import br.com.fiap.delivery_logistics.domain.repository.DeliveryRepository;
 import br.com.fiap.delivery_logistics.infrastructure.exception.DeliveryException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +42,7 @@ class DeliveryPersonServiceImplTest {
     void shouldCreateDeliveryPerson() {
         // Arrange
         var request = new DeliveryPersonRequestDto();
-        request.setNome("John Doe");
+        request.setName("John Doe");
         request.setVehicleType(VehicleType.BICYCLE);
 
         var deliveryPerson = new DeliveryPerson("John Doe", VehicleType.BICYCLE);
@@ -136,4 +134,38 @@ class DeliveryPersonServiceImplTest {
                 .isInstanceOf(DeliveryException.class)
                 .hasMessage("Delivery Person not found");
     }
+
+    @Test
+    void shouldCalculateRoutesByRegion() {
+        Delivery delivery1 = new Delivery();
+        delivery1.setOrderId(UUID.randomUUID());
+        delivery1.setStatus(DeliveryStatus.PENDING);
+        delivery1.setDestinationZipCode("12345678");
+
+        Delivery delivery2 = new Delivery();
+        delivery2.setOrderId(UUID.randomUUID());
+        delivery2.setStatus(DeliveryStatus.PENDING);
+        delivery2.setDestinationZipCode("12345999");
+
+        Delivery delivery3 = new Delivery();
+        delivery3.setOrderId(UUID.randomUUID());
+        delivery3.setStatus(DeliveryStatus.PENDING);
+        delivery3.setDestinationZipCode("98765432");
+
+        List<Delivery> pendingDeliveries = Arrays.asList(delivery1, delivery2, delivery3);
+
+        when(deliveryRepository.findByStatus(DeliveryStatus.PENDING)).thenReturn(pendingDeliveries);
+
+        // Act
+        SortedMap<String, List<Delivery>> routesByRegion = deliveryPersonService.calculateRoutesByRegion();
+
+        // Assert
+        assertThat(routesByRegion).isNotNull();
+        assertThat(routesByRegion).hasSize(2);
+        assertThat(routesByRegion.get("region 12345")).containsExactlyInAnyOrder(delivery1, delivery2);
+        assertThat(routesByRegion.get("region 98765")).containsExactly(delivery3);
+
+        verify(deliveryRepository, times(1)).findByStatus(DeliveryStatus.PENDING);
+    }
+
 }

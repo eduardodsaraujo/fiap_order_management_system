@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Generated schema for Root",
+  "type": "object",
+  "properties": {
+    "region 12345": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string"
+          },
+          "destinationZipCode": {},
+          "status": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          },
+          "lastUpdated": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "orderId",
+          "destinationZipCode",
+          "status",
+          "latitude",
+          "longitude",
+          "lastUpdated"
+        ]
+      }
+    }
+  },
+  "required": [
+    "region 12345"
+  ]
+}

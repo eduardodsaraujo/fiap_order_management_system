@@ -28,18 +28,20 @@ public class CalculateShippingServiceImpl implements CalculateShippingService {
     private int estimateDeliveryTimeByRegion(String destinationZip) {
         int firstDigit = Character.getNumericValue(destinationZip.charAt(0));
 
+        var deliveryTime = baseDeliveryTime;
+
         switch (firstDigit) {
-            case 2 -> baseDeliveryTime += 2;
-            case 3, 8 -> baseDeliveryTime += 3;
-            case 4, 7, 9 -> baseDeliveryTime += 4;
-            case 5 -> baseDeliveryTime += 5;
-            case 6 -> baseDeliveryTime += 6;
+            case 2 -> deliveryTime += 2;
+            case 3, 8 -> deliveryTime += 3;
+            case 4, 7, 9 -> deliveryTime += 4;
+            case 5 -> deliveryTime += 5;
+            case 6 -> deliveryTime += 6;
             default -> {
                 // No additional time for unexpected digits, 0 or 1
             }
         }
 
-        return baseDeliveryTime;
+        return deliveryTime;
     }
 
 }

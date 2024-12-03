@@ -4,6 +4,7 @@ import br.com.fiap.customer_management.api.controller.CustomerController;
 import br.com.fiap.customer_management.application.CustomerDTO;
 import br.com.fiap.customer_management.application.CustomerRequestDTO;
 import br.com.fiap.customer_management.application.service.CustomerService;
+import br.com.fiap.customer_management.infrastructure.exception.CustomerException;
 import br.com.fiap.customer_management.infrastructure.exception.GlobalExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
@@ -154,4 +156,46 @@ class CustomerControllerTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    void shouldReturnBadRequestWhenEmailIsMissing() throws Exception {
+        // Arrange
+        // Create a CustomerRequestDTO with a missing email
+        CustomerRequestDTO customerRequest = new CustomerRequestDTO();
+        customerRequest.setName("Eduardo");
+        customerRequest.setPhone("123456789");
+
+        // Act
+        ResultActions result = mockMvc.perform(post("/api/customers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(customerRequest)))
+                .andDo(print());
+
+        // Assert
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation error"))
+                .andExpect(jsonPath("$.fieldErrors.email").value("Email is required."));
+
+        // Verify
+        verify(customerService, times(0)).saveCustomer(any(CustomerRequestDTO.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCustomerNotFound() throws Exception {
+        // Arrange
+        Long nonExistentCustomerId = 999L;
+        when(customerService.findById(nonExistentCustomerId)).thenThrow(new CustomerException("Customer not found"));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/customers/{id}", nonExistentCustomerId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is5xxServerError())
+                .andExpect(jsonPath("$.message").value("Customer not found"))
+                .andDo(print());
+
+        // Verify
+        verify(customerService, times(1)).findById(nonExistentCustomerId);
+    }
+
+
 }

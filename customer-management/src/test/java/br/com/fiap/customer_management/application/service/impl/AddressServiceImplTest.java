@@ -151,6 +151,26 @@ class AddressServiceImplTest {
         verify(addressRepository, times(1)).delete(address);
     }
 
+    @Test
+    void shouldThrowExceptionWhenAddressDoesNotBelongToCustomer() {
+        Long customerId = 1L;
+        Long addressId = 2L;
+        Customer customer = createCustomer();
+        customer.setId(customerId);
+        Address address = createAddress(addressId, customer);
+
+        Customer anotherCustomer = createCustomer();
+        anotherCustomer.setId(99L);
+        address.setCustomer(anotherCustomer);
+
+        when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
+
+        assertThatThrownBy(() -> addressService.findAddressById(customerId, addressId))
+                .isInstanceOf(AddressException.class)
+                .hasMessage("Address does not belong to the customer");
+
+        verify(addressRepository, times(1)).findById(addressId);
+    }
 
 
 }

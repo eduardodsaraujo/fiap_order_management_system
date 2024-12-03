@@ -14,11 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @AutoConfigureTestDatabase
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class DeliveryPersonServiceImplTestIT {
 
     @Autowired
@@ -37,7 +38,7 @@ public class DeliveryPersonServiceImplTestIT {
     @BeforeEach
     void setUp() {
         DeliveryPerson deliveryPerson = new DeliveryPerson();
-        deliveryPerson.setName("John Delivery");
+        deliveryPerson.setName("Edy Delivery");
         deliveryPerson.setVehicleType(VehicleType.BICYCLE);
         deliveryPerson.setStatus(DeliveryPersonStatus.AVAILABLE);
         deliveryPersonRepository.save(deliveryPerson);
@@ -49,14 +50,14 @@ public class DeliveryPersonServiceImplTestIT {
         List<DeliveryPersonResponseDto> deliveryPeople = deliveryPersonService.findAllDeliveryPeople(pageable).getContent();
 
         assertNotNull(deliveryPeople);
-        assertEquals(1, deliveryPeople.size());
-        assertEquals("John Delivery", deliveryPeople.get(0).getName());
+        assertEquals(2, deliveryPeople.size());
+        assertEquals("Edy Delivery", deliveryPeople.get(1).getName());
     }
 
     @Test
     void shouldReturnSavedDeliveryPersonDTO() {
         DeliveryPersonRequestDto requestDto = new DeliveryPersonRequestDto();
-        requestDto.setNome("Jane Delivery");
+        requestDto.setName("Jane Delivery");
         requestDto.setVehicleType(VehicleType.CAR);
 
         DeliveryPersonResponseDto result = deliveryPersonService.createDeliveryPerson(requestDto);

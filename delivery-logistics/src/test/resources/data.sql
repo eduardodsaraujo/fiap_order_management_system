@@ -1,4 +1,5 @@
-CREATE TABLE delivery (
+
+CREATE TABLE IF NOT EXISTS delivery (
   orderid           UUID,
   destination_zipcode   varchar(8) NOT NULL,
   status       varchar(30) NOT NULL,
@@ -9,14 +10,14 @@ CREATE TABLE delivery (
   PRIMARY KEY (orderid));
 
 
-CREATE TABLE delivery_person (
+CREATE TABLE IF NOT EXISTS delivery_person (
   id           SERIAL NOT NULL,
   name         varchar(100) NOT NULL,
   vehicle_type varchar(15) NOT NULL,
   status       varchar(30) NOT NULL,
   PRIMARY KEY (id));
 
-ALTER TABLE delivery ADD CONSTRAINT FKdelivery925474 FOREIGN KEY (deliverypersonid) REFERENCES delivery_person (id);
+ALTER TABLE delivery ADD CONSTRAINT IF NOT EXISTS FKdelivery925474 FOREIGN KEY (deliverypersonid) REFERENCES delivery_person (id);
 
 INSERT INTO delivery (
     orderid,
@@ -33,4 +34,7 @@ VALUES (
     40.712776,           -- Latitude (exemplo)
     -74.005974,          -- Longitude (exemplo)
     CURRENT_TIMESTAMP   -- Data e hora atuais);
-)
+);
+
+INSERT INTO delivery_person (name, vehicle_type, status) VALUES
+('Carlos', 'BICYCLE', 'AVAILABLE');

@@ -5,6 +5,7 @@ import br.com.fiap.delivery_logistics.application.dto.delivery.DeliveryRequestDt
 import br.com.fiap.delivery_logistics.application.dto.delivery.DeliveryResponseDto;
 import br.com.fiap.delivery_logistics.application.service.impl.DeliveryServiceImpl;
 import br.com.fiap.delivery_logistics.domain.model.Delivery;
+import br.com.fiap.delivery_logistics.domain.model.DeliveryPersonStatus;
 import br.com.fiap.delivery_logistics.domain.model.DeliveryStatus;
 import br.com.fiap.delivery_logistics.domain.repository.DeliveryRepository;
 import br.com.fiap.delivery_logistics.infrastructure.client.OrderManagementClient;
@@ -14,12 +15,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static br.com.fiap.delivery_logistics.utils.DeliveryHelper.createDelivery;
+import static br.com.fiap.delivery_logistics.utils.DeliveryHelper.createDeliveryResponseDto;
+import static br.com.fiap.delivery_logistics.utils.DeliveryPersonHelper.createDeliveryPerson;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -75,6 +85,8 @@ class DeliveryServiceImplTest {
         BigDecimal longitude = BigDecimal.valueOf(-74.0060);
 
         Delivery delivery = new Delivery();
+        var deliveryPerson = createDeliveryPerson(DeliveryPersonStatus.UNAVAILABLE);
+        delivery.setDeliveryPerson(deliveryPerson);
         delivery.setOrderId(orderId);
 
         when(deliveryRepository.findByOrderId(orderId)).thenReturn(Optional.of(delivery));
@@ -144,4 +156,59 @@ class DeliveryServiceImplTest {
                 .hasMessage("Delivery not found");
         verify(deliveryRepository, times(1)).findById(deliveryId);
     }
+
+    @Test
+    void shouldGetDeliveryById() {
+        // Arrange
+        UUID deliveryId = UUID.randomUUID();
+        Delivery delivery = new Delivery();
+        delivery.setOrderId(deliveryId);
+        delivery.setStatus(DeliveryStatus.PENDING);
+        when(deliveryRepository.findById(deliveryId)).thenReturn(Optional.of(delivery));
+
+        // Act
+        DeliveryResponseDto response = deliveryService.getById(deliveryId);
+
+        // Assert
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getOrderId()).isEqualTo(deliveryId);
+        Assertions.assertThat(response.getStatus()).isEqualTo(DeliveryStatus.PENDING);
+        verify(deliveryRepository, times(1)).findById(deliveryId);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDeliveryNotFoundById() {
+        // Arrange
+        UUID deliveryId = UUID.randomUUID();
+        when(deliveryRepository.findById(deliveryId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThatThrownBy(() -> deliveryService.getById(deliveryId))
+                .isInstanceOf(DeliveryException.class)
+                .hasMessage("Delivery not found");
+        verify(deliveryRepository, times(1)).findById(deliveryId);
+    }
+
+    @Test
+    void shouldReturnAllDeliveriesPaged() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+        var delivery = createDelivery(DeliveryStatus.PENDING);
+        var delivery2 = createDelivery(DeliveryStatus.PENDING);
+
+        List<Delivery> deliveryList = Arrays.asList(delivery, delivery2);
+        Page<Delivery> deliveryPage =
+                new PageImpl<>(deliveryList, pageable, deliveryList.size());
+
+
+        when(deliveryRepository.findAll(pageable)).thenReturn(deliveryPage);
+
+        // Act
+        Page<DeliveryResponseDto> response = deliveryService.findAllDeliveries(pageable);
+
+        // Assert
+        Assertions.assertThat(response).isNotNull();
+        verify(deliveryRepository, times(1)).findAll(pageable);
+    }
+
 }

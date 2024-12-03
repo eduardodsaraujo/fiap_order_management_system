@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.UUID;
 
-@FeignClient(value = "order-management", path = "//api/orders")
+@FeignClient(value = "order-management", path = "/api/orders")
 public interface OrderManagementClient {
     @PutMapping(value = "/{orderId}/delivered")
     public ResponseEntity<Void> updateDelivered(@PathVariable UUID orderId);
