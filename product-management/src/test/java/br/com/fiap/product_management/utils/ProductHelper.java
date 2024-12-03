@@ -2,6 +2,7 @@ package br.com.fiap.product_management.utils;
 
 import br.com.fiap.product_management.application.input.CreateProductInput;
 import br.com.fiap.product_management.domain.model.Product;
+import br.com.fiap.product_management.domain.repository.ProductRepository;
 
 public class ProductHelper {
 
@@ -30,6 +31,11 @@ public class ProductHelper {
                 .weight(1.0)
                 .stockQuantity(100.0)
                 .build();
+    }
+
+    public static Product saveProduct(ProductRepository productRepository) {
+        Product product = createProduct();
+        return productRepository.save(product);
     }
 
 }

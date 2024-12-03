@@ -26,14 +26,14 @@ public class ProductController {
 
     @PostMapping
     @Operation(summary = "Create a new product", description = "Create a new product with the provided details")
-    public ResponseEntity<ProductDto> create(@Valid @RequestBody CreateProductInput input) {
+    public ResponseEntity<ProductDto> create(@RequestBody @Valid CreateProductInput input) {
         Product product = productService.create(input);
         return ResponseEntity.ok(ProductDto.toDto(product));
     }
 
     @PutMapping("/{productId}")
     @Operation(summary = "Update product", description = "Update an existing product's details")
-    public ResponseEntity<ProductDto> update(@PathVariable long productId, @RequestBody UpdateProductInput input) {
+    public ResponseEntity<ProductDto> update(@PathVariable long productId, @RequestBody @Valid UpdateProductInput input) {
         Product product = productService.update(productId, input);
         return ResponseEntity.ok(ProductDto.toDto(product));
     }

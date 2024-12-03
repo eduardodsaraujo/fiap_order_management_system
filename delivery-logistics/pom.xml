@@ -11,7 +11,7 @@
 	<groupId>br.com.fiap.fiapdeliverylogistics</groupId>
 	<artifactId>delivery-logistics</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Delivery-Logistics</name>
+	<name>delivery-logistics</name>
 	<description>Fiap Delivery Logistics API</description>
 	<url/>
 	<licenses>

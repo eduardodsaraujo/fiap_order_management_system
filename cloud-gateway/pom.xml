@@ -11,7 +11,7 @@
 	<groupId>br.com.fiap.fiapcloudgateway</groupId>
 	<artifactId>cloud-gateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>cloudgateway</name>
+	<name>cloud-gateway</name>
 	<description>Fiap Cloud Gateway</description>
 	<url/>
 	<licenses>

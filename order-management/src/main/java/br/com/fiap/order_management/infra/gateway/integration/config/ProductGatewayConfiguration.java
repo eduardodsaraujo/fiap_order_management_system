@@ -22,7 +22,7 @@ public class ProductGatewayConfiguration {
     @Bean
     public IntegrationFlow productFlow() {
         return IntegrationFlow.from("productChannel")
-                .handle(Http.outboundGateway("http://localhost:8080/product-management/api/products/all/{productsIds}")
+                .handle(Http.outboundGateway("http://gateway:8080/product-management/api/products/all/{productsIds}")
                         .uriVariable("productsIds", "payload")
                         .httpMethod(HttpMethod.GET)
                         .expectedResponseType(ProductDto[].class)
@@ -41,7 +41,7 @@ public class ProductGatewayConfiguration {
     @Bean
     public IntegrationFlow increaseProductStockFlow() {
         return IntegrationFlow.from("increaseProductStockChannel")
-                .handle(Http.outboundGateway("http://localhost:8080/product-management/api/products/stock/increase")
+                .handle(Http.outboundGateway("http://gateway:8080/product-management/api/products/stock/increase")
                         .httpMethod(HttpMethod.PUT)
                 )
                 .log()
@@ -58,7 +58,7 @@ public class ProductGatewayConfiguration {
     @Bean
     public IntegrationFlow decreaseProductStockFlow() {
         return IntegrationFlow.from("decreaseProductStockChannel")
-                .handle(Http.outboundGateway("http://localhost:8080/product-management/api/products/stock/decrease")
+                .handle(Http.outboundGateway("http://gateway:8080/product-management/api/products/stock/decrease")
                         .httpMethod(HttpMethod.PUT)
                 )
                 .log()

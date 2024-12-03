@@ -11,7 +11,7 @@
 	<groupId>br.com.fiap.fiapeurekaserver</groupId>
 	<artifactId>eureka-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>eurekaserver</name>
+	<name>eureka-server</name>
 	<description>Fiap Eureka Server</description>
 	<url/>
 	<licenses>

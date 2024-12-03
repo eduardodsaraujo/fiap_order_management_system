@@ -11,7 +11,7 @@
     <groupId>br.com.fiap</groupId>
     <artifactId>order-management</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>order_management</name>
+    <name>order-management</name>
     <description>order_management</description>
     <url/>
     <licenses>

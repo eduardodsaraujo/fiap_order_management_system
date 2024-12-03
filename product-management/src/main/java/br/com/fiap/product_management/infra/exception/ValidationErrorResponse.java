@@ -1,12 +1,10 @@
 package br.com.fiap.product_management.infra.exception;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.Map;
 
-@Setter
-@Getter
+@Data
 public class ValidationErrorResponse extends MessageError {
 
     private Map<String, String> fieldErrors;

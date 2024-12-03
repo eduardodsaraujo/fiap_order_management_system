@@ -6,7 +6,7 @@ import br.com.fiap.product_management.application.service.ProductService;
 import br.com.fiap.product_management.domain.model.Product;
 import br.com.fiap.product_management.infra.exception.GlobalExceptionHandler;
 import br.com.fiap.product_management.utils.ProductHelper;
-import org.junit.jupiter.api.AfterEach;
+import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
@@ -36,13 +37,10 @@ public class ProductControllerTest {
     @Mock
     private ProductService productService;
 
-    private AutoCloseable openMocks;
-
     @BeforeEach
     public void setup() {
-        openMocks = MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.openMocks(this);
         ProductController productController = new ProductController(productService);
-
         mockMvc = MockMvcBuilders.standaloneSetup(productController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -52,11 +50,6 @@ public class ProductControllerTest {
                 }, "/*")
                 .build();
 
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        openMocks.close();
     }
 
     @Test
@@ -71,9 +64,9 @@ public class ProductControllerTest {
         when(productService.create(any(CreateProductInput.class))).thenReturn(product);
 
         // Act
-        mockMvc.perform(post("/api/products", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(productInput)))
+        mockMvc.perform(post("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(productInput)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(product.getId()))
                 .andExpect(jsonPath("$.code").value(product.getCode()))
@@ -263,5 +256,46 @@ public class ProductControllerTest {
         // Assert
         verify(productService, times(1)).findAllByName(anyString(), any(Pageable.class));
     }
+
+
+    @Test
+    void shouldReturnBadRequestWhenCodeMissing() throws Exception {
+        // Arrange
+        CreateProductInput productInput = ProductHelper.createProductInput();
+        productInput.setCode(null);
+
+        // Act
+        ResultActions result = mockMvc.perform(post("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(productInput)))
+                .andDo(print());
+
+        // Assert
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation error"))
+                .andExpect(jsonPath("$.fieldErrors.code").value("Code is required."));
+
+    }
+
+
+    @Test
+    void shouldReturnBadRequestWhenCodeExceededSize() throws Exception {
+        // Arrange
+        CreateProductInput productInput = ProductHelper.createProductInput();
+        productInput.setCode(RandomString.make(30));
+
+        // Act
+        ResultActions result = mockMvc.perform(post("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(productInput)))
+                .andDo(print());
+
+        // Assert
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation error"))
+                .andExpect(jsonPath("$.fieldErrors.code").value("Code must not exceed 20 characters."));
+
+    }
+
 
 }

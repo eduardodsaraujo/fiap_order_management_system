@@ -16,6 +16,7 @@ services:
       dockerfile: ../images/GatewayDockerfile
     container_name: order_management_gateway
     environment:
+      - spring_profiles_active=prod
       - EUREKA_HOST=eureka
     ports:
       - "8080:8080"
@@ -36,6 +37,7 @@ services:
       - customer_db
       - eureka
     environment:
+      - spring_profiles_active=prod
       - EUREKA_HOST=eureka
       - DATABASE_HOST=customer_db
       - DATABASE_PORT=5432
@@ -61,10 +63,10 @@ services:
       dockerfile: ProductDockerfile
     container_name: product_management
     depends_on:
-      - product_import
       - product_db
       - eureka
     environment:
+      - spring_profiles_active=prod
       - EUREKA_HOST=eureka
       - DATABASE_HOST=product_db
       - DATABASE_PORT=5432
@@ -81,6 +83,7 @@ services:
       - product_db
       - eureka
     environment:
+      - spring_profiles_active=prod
       - EUREKA_HOST=eureka
       - DATABASE_HOST=product_db
       - DATABASE_PORT=5432
@@ -109,6 +112,7 @@ services:
       - order_db
       - eureka
     environment:
+      - spring_profiles_active=prod
       - EUREKA_HOST=eureka
       - DATABASE_HOST=order_db
       - DATABASE_PORT=27017
@@ -139,6 +143,7 @@ services:
       - delivery_db
       - eureka
     environment:
+      - spring_profiles_active=prod
       - EUREKA_HOST=eureka
       - DATABASE_HOST=delivery_db
       - DATABASE_PORT=5432

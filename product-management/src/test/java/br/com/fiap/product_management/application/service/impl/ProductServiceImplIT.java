@@ -5,76 +5,54 @@ import br.com.fiap.product_management.application.input.UpdateProductInput;
 import br.com.fiap.product_management.domain.model.Product;
 import br.com.fiap.product_management.domain.repository.ProductRepository;
 import br.com.fiap.product_management.utils.ProductHelper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-public class ProductServiceImplTest {
+@SpringBootTest
+@AutoConfigureTestDatabase
+@ActiveProfiles("test")
+@Transactional
+public class ProductServiceImplIT {
 
+    @Autowired
     private ProductServiceImpl productService;
-
-    @Mock
+    @Autowired
     private ProductRepository productRepository;
-
-    private AutoCloseable openMocks;
-
-    @BeforeEach
-    public void setup() {
-        openMocks = MockitoAnnotations.openMocks(this);
-        productService = new ProductServiceImpl(productRepository);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        openMocks.close();
-    }
 
     @Test
     public void shouldCreateProduct() {
         // Arrange
-        Product product = ProductHelper.createProduct();
-
         CreateProductInput productInput = ProductHelper.createProductInput();
-
-        when(productRepository.save(any(Product.class))).thenReturn(product);
 
         // Act
         Product savedProduct = productService.create(productInput);
 
         // Assert
         assertThat(savedProduct).isInstanceOf(Product.class).isNotNull();
-        assertThat(savedProduct.getId()).isEqualTo(product.getId());
-        assertThat(savedProduct.getCode()).isEqualTo(product.getCode());
-        assertThat(savedProduct.getName()).isEqualTo(product.getName());
-        assertThat(savedProduct.getDescription()).isEqualTo(product.getDescription());
-        assertThat(savedProduct.getCategory()).isEqualTo(product.getCategory());
-        assertThat(savedProduct.isEnable()).isEqualTo(product.isEnable());
-        assertThat(savedProduct.getPrice()).isEqualTo(product.getPrice());
-        assertThat(savedProduct.getWeight()).isEqualTo(product.getWeight());
-        assertThat(savedProduct.getStockQuantity()).isEqualTo(product.getStockQuantity());
-
-        verify(productRepository, times(1)).save(any(Product.class));
+        assertThat(savedProduct.getId()).isGreaterThan(0);
+        assertThat(savedProduct.getCode()).isEqualTo(productInput.getCode());
+        assertThat(savedProduct.getName()).isEqualTo(productInput.getName());
+        assertThat(savedProduct.getDescription()).isEqualTo(productInput.getDescription());
+        assertThat(savedProduct.getCategory()).isEqualTo(productInput.getCategory());
+        assertThat(savedProduct.isEnable()).isEqualTo(true);
+        assertThat(savedProduct.getPrice()).isEqualTo(productInput.getPrice());
+        assertThat(savedProduct.getWeight()).isEqualTo(productInput.getWeight());
+        assertThat(savedProduct.getStockQuantity()).isEqualTo(productInput.getStockQuantity());
     }
 
     @Test
     public void shouldUpdateProduct() {
         // Arrange
         long productId = 1L;
-        Product product = ProductHelper.createProduct();
-        product.setId(productId);
 
         UpdateProductInput updateProductInput = UpdateProductInput.builder()
                 .code("IP16PM")
@@ -85,8 +63,6 @@ public class ProductServiceImplTest {
                 .price(8000.0)
                 .weight(1.0)
                 .build();
-
-        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
 
         // Act
         Product updatedProduct = productService.update(productId, updateProductInput);
@@ -101,18 +77,12 @@ public class ProductServiceImplTest {
         assertThat(updatedProduct.getManufacturer()).isEqualTo("manufacturer");
         assertThat(updatedProduct.getPrice()).isEqualTo(8000.0);
         assertThat(updatedProduct.getWeight()).isEqualTo(1.0);
-
-        verify(productRepository, times(1)).findById(anyLong());
     }
 
     @Test
     public void shouldEnableProduct() {
         // Arrange
         long productId = 1L;
-        Product product = ProductHelper.createProduct();
-        product.setId(productId);
-
-        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
 
         // Act
         Product enabledProduct = productService.enable(productId);
@@ -120,18 +90,12 @@ public class ProductServiceImplTest {
         // Assert
         assertThat(enabledProduct).isNotNull().isInstanceOf(Product.class);
         assertThat(enabledProduct.isEnable()).isTrue();
-
-        verify(productRepository, times(1)).findById(anyLong());
     }
 
     @Test
     public void shouldDisableProduct() {
         // Arrange
         long productId = 1L;
-        Product product = ProductHelper.createProduct();
-        product.setId(productId);
-
-        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
 
         // Act
         Product disabledProduct = productService.disable(productId);
@@ -139,18 +103,13 @@ public class ProductServiceImplTest {
         // Assert
         assertThat(disabledProduct).isNotNull().isInstanceOf(Product.class);
         assertThat(disabledProduct.isEnable()).isFalse();
-
-        verify(productRepository, times(1)).findById(anyLong());
     }
 
     @Test
     public void shouldFindProductById() {
         // Arrange
-        long productId = 1L;
-        Product product = ProductHelper.createProduct();
-        product.setId(productId);
-
-        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        Product product = ProductHelper.saveProduct(productRepository);
+        long productId = product.getId();
 
         // Act
         Product foundProduct = productService.findById(productId);
@@ -166,52 +125,29 @@ public class ProductServiceImplTest {
         assertThat(foundProduct.getPrice()).isEqualTo(product.getPrice());
         assertThat(foundProduct.getWeight()).isEqualTo(product.getWeight());
         assertThat(foundProduct.getStockQuantity()).isEqualTo(product.getStockQuantity());
-
-        verify(productRepository, times(1)).findById(anyLong());
     }
 
     @Test
     public void shouldFindAllProductsById() {
         // Arrange
         long productId = 1L;
-        Product product = ProductHelper.createProduct();
-        product.setId(productId);
-
         long productId2 = 2L;
-        Product product2 = ProductHelper.createProduct();
-        product2.setId(productId2);
-        var products = List.of(product, product2);
-
-        when(productRepository.findAllById(anyList())).thenReturn(products);
 
         // Act
         var foundProducts = productService.findAllById(Arrays.asList(productId, productId2));
 
         // Assert
-        verify(productRepository, times(1)).findAllById(anyList());
-        assertThat(foundProducts).hasSize(2).contains(product, product2);
+        assertThat(foundProducts).hasSize(2);
     }
 
     @Test
     public void shouldFindAllProductsByName() {
         // Arrange
-        long productId = 1L;
-        Product product = ProductHelper.createProduct();
-        product.setId(productId);
-
-        long productId2 = 2L;
-        Product product2 = ProductHelper.createProduct();
-        product2.setId(productId2);
-        var products = List.of(product, product2);
-
-        when(productRepository.findAllByNameLike(anyString(), any(Pageable.class))).thenReturn(new PageImpl<>(products));
-
         // Act
-        var foundProducts = productService.findAllByName(product.getName(), PageRequest.of(0, 10));
+        var foundProducts = productService.findAllByName("IP%", PageRequest.of(0, 10));
 
         // Assert
-        verify(productRepository, times(1)).findAllByNameLike(anyString(), any(Pageable.class));
-        assertThat(foundProducts).hasSize(2).contains(product, product2);
+        assertThat(foundProducts).hasSize(2);
     }
 
 

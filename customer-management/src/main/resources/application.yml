@@ -7,14 +7,9 @@ spring:
     username: postgres
     password: 123456
 
-  # Uncomment these lines to use environment variables for database connection
-#    datasource:
-#      driver-class-name: org.postgresql.Driver
-#      url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
-#      username: ${DATABASE_USER}
-#      password: ${DATABASE_PASSWORD}
-  # swagger-ui:
-  #   tagsSorter: none
+springdoc:
+  swagger-ui:
+    operationsSorter: method
 
 server:
   port: 0
@@ -26,7 +21,6 @@ server:
 eureka:
   client:
     service-url:
-#      defaultZone: http://${EUREKA_HOST}:8761/eureka
       defaultZone: http://localhost:8761/eureka
   instance:
     instance-id: "${spring.application.name}:${spring.application.instance_id:${random.value}}"
