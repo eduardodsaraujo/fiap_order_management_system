@@ -6,7 +6,6 @@ import br.com.fiap.delivery_logistics.application.dto.delivery.DeliveryTrackRequ
 import br.com.fiap.delivery_logistics.application.dto.shipping.CalculateShippingRequestDto;
 import br.com.fiap.delivery_logistics.domain.model.DeliveryStatus;
 import br.com.fiap.delivery_logistics.infrastructure.client.OrderManagementClient;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.RestAssured;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +29,6 @@ import org.springframework.test.context.event.annotation.BeforeTestClass;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
