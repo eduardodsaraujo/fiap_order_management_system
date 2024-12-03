@@ -22,7 +22,7 @@ public class DeliveryGatewayConfiguration {
     @Bean
     public IntegrationFlow calculateShippingFlow() {
         return IntegrationFlow.from("calculateShippingChannel")
-                .handle(Http.outboundGateway("http://gateway:8080/delivery-logistics/api/delivery/calculate-shipping")
+                .handle(Http.outboundGateway("http://localhost:8080/delivery-logistics/api/delivery/calculate-shipping")
                         .httpMethod(HttpMethod.POST)
                         .expectedResponseType(CalculateShippingDto.class)
                 )
@@ -39,7 +39,7 @@ public class DeliveryGatewayConfiguration {
     @Bean
     public IntegrationFlow createDeliveryFlow() {
         return IntegrationFlow.from("createDeliveryChannel")
-                .handle(Http.outboundGateway("http://gateway:8080/delivery-logistics/api/delivery")
+                .handle(Http.outboundGateway("http://localhost:8080/delivery-logistics/api/delivery")
                         .httpMethod(HttpMethod.POST)
                         .expectedResponseType(CalculateShippingDto.class)
                 )

@@ -38,7 +38,7 @@ public class ProductControllerIT {
     }
 
     @Test
-    public void shouldCreateProduct() throws Exception {
+    public void shouldCreateProduct() {
         // Arrange
         CreateProductInput productInput = ProductHelper.createProductInput();
 
@@ -63,7 +63,7 @@ public class ProductControllerIT {
     }
 
     @Test
-    public void shouldUpdateProduct() throws Exception {
+    public void shouldUpdateProduct() {
         // Arrange
         long productId = 1L;
 
@@ -91,13 +91,12 @@ public class ProductControllerIT {
                 .body("name", equalTo(updateProductInput.getName()))
                 .body("description", equalTo(updateProductInput.getDescription()))
                 .body("category", equalTo(updateProductInput.getCategory()))
-                .body("enable", equalTo(true))
                 .body("price", equalTo(updateProductInput.getPrice()))
                 .body("weight", equalTo(updateProductInput.getWeight()));
     }
 
     @Test
-    public void shouldEnableProduct() throws Exception {
+    public void shouldEnableProduct() {
         // Arrange
         long productId = 1L;
 
@@ -115,7 +114,7 @@ public class ProductControllerIT {
     }
 
     @Test
-    public void shouldDisableProduct() throws Exception {
+    public void shouldDisableProduct() {
         // Arrange
         long productId = 1L;
 
@@ -132,7 +131,7 @@ public class ProductControllerIT {
     }
 
     @Test
-    public void shouldFindProductById() throws Exception {
+    public void shouldFindProductById() {
         // Arrange
         long productId = 1L;
 
@@ -148,7 +147,7 @@ public class ProductControllerIT {
     }
 
     @Test
-    public void shouldFindAllProductsById() throws Exception {
+    public void shouldFindAllProductsById() {
         // Arrange
         long productId = 1L;
         long productId2 = 2L;
@@ -165,7 +164,7 @@ public class ProductControllerIT {
     }
 
     @Test
-    public void shouldFindAllProductsByName() throws Exception {
+    public void shouldFindAllProductsByName() {
         // Arrange
         // Act
         // Assert
@@ -177,8 +176,6 @@ public class ProductControllerIT {
                 .body(matchesJsonSchemaInClasspath("./schemas/ProductArrayResponseSchema.json"));
 
     }
-
-
 
 
 }

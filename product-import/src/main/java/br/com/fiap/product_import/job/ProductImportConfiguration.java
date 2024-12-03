@@ -13,12 +13,14 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
+import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;import org.springframework.core.io.FileSystemResource;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 
@@ -37,11 +39,11 @@ public class ProductImportConfiguration {
 
     @Bean
     public Job job(
-            @Qualifier("initialStep") Step inicialStep,
+            @Qualifier("initialStep") Step initialStep,
             @Qualifier("moveFilesStep") Step moveFilesStep,
             JobRepository jobRepository) {
         return new JobBuilder("import-files", jobRepository)
-                .start(inicialStep)
+                .start(initialStep)
                 .next(moveFilesStep)
                 .incrementer(new RunIdIncrementer())
                 .build();
@@ -53,7 +55,7 @@ public class ProductImportConfiguration {
             @Qualifier("writer") ItemWriter<ProductImport> writer,
             @Qualifier("processor") ProductImportProcessor processor,
             JobRepository jobRepository) {
-        return new StepBuilder("inicial-step", jobRepository)
+        return new StepBuilder("initial-step", jobRepository)
                 .<ProductImport, ProductImport>chunk(200, transactionManager)
                 .reader(reader)
                 .processor(processor)
@@ -63,7 +65,7 @@ public class ProductImportConfiguration {
     }
 
     @Bean
-    public ItemReader<ProductImport> reader() {
+    public FlatFileItemReader<ProductImport> reader() {
         return new FlatFileItemReaderBuilder<ProductImport>()
                 .name("read-csv")
                 .resource(new FileSystemResource(directory + "/data.csv"))
@@ -120,7 +122,7 @@ public class ProductImportConfiguration {
 
     @Bean
     public Step moveFilesStep(JobRepository jobRepository) {
-        return new StepBuilder("move-file", jobRepository)
+        return new StepBuilder("move-files", jobRepository)
                 .tasklet(moveFileTasklet(), transactionManager)
                 .allowStartIfComplete(true)
                 .build();

@@ -23,7 +23,7 @@ public class SpringBatchGateway implements JobGateway {
     }
 
     @Override
-    public void execute(ImportFile importFile) {
+    public void execute(ImportFile importFile) throws ProductImportException {
         try {
             JobParameters jobParameters = new JobParameters();
             jobLauncher.run(job, jobParameters);

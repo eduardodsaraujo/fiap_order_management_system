@@ -22,7 +22,7 @@ public class CustomerGatewayConfiguration {
     @Bean
     public IntegrationFlow customerFlow() {
         return IntegrationFlow.from("customerChannel")
-                .handle(Http.outboundGateway("http://gateway:8080/customer-management/api/customers/{customerId}")
+                .handle(Http.outboundGateway("http://localhost:8080/customer-management/api/customers/{customerId}")
                         .uriVariable("customerId", "payload")
                         .httpMethod(HttpMethod.GET)
                         .expectedResponseType(CustomerDto.class)

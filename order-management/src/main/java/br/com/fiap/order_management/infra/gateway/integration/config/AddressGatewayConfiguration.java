@@ -22,7 +22,7 @@ public class AddressGatewayConfiguration {
     @Bean
     public IntegrationFlow addressFlow() {
         return IntegrationFlow.from("addressChannel")
-                .handle(Http.outboundGateway("http://gateway:8080/customer-management/api/customers/{customerId}/addresses/{addressId}")
+                .handle(Http.outboundGateway("http://localhost:8080/customer-management/api/customers/{customerId}/addresses/{addressId}")
                         .uriVariable("customerId", "payload[0]")
                         .uriVariable("addressId", "payload[1]")
                         .httpMethod(HttpMethod.GET)
