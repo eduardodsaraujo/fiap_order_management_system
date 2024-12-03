@@ -229,7 +229,7 @@ public class ProductControllerTest {
         Product product = ProductHelper.createProduct();
         product.setId(productId);
 
-        long productId2 = 1L;
+        long productId2 = 2L;
         Product product2 = ProductHelper.createProduct();
         product2.setId(productId2);
         var products = List.of(product, product2);
@@ -237,7 +237,7 @@ public class ProductControllerTest {
         when(productService.findAllByName(anyString(), any(Pageable.class))).thenReturn(new PageImpl<>(products));
 
         // Act
-        mockMvc.perform(get("/api/products", Arrays.asList(productId, productId2))
+        mockMvc.perform(get("/api/products")
                         .queryParam("name", product.getName())
                         .queryParam("page", "0")
                         .queryParam("size", "10")
