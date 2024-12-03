@@ -20,7 +20,9 @@ public class StockProductIntegrationGatewayIT {
     @Test
     public void shouldIncreaseStock() {
         // Act
-        stubFor(put("/product-management/api/products/stock/increase").willReturn(ok()));
+        stubFor(put("/product-management/api/products/stock/increase")
+                .inScenario("increase-stock")
+                .willReturn(ok()));
 
         // Arrange
         stockProductIntegrationGateway.increaseStock(1L, 10);
@@ -32,7 +34,9 @@ public class StockProductIntegrationGatewayIT {
     @Test
     public void shouldDecreaseStock() {
         // Act
-        stubFor(put("/product-management/api/products/stock/decrease").willReturn(ok()));
+        stubFor(put("/product-management/api/products/stock/decrease")
+                .inScenario("decrease-stock")
+                .willReturn(ok()));
 
         // Arrange
         stockProductIntegrationGateway.decreaseStock(1L, 10);

@@ -14,7 +14,7 @@ public class CustomerHelper {
         return Customer.builder()
                 .id(1L)
                 .name("JOAO")
-                .name("joao@test.com.br")
+                .email("joao@test.com.br")
                 .phone("123456789")
                 .build();
     }
@@ -23,7 +23,7 @@ public class CustomerHelper {
         return CustomerDocument.builder()
                 .id(1L)
                 .name("JOAO")
-                .name("joao@test.com.br")
+                .email("joao@test.com.br")
                 .phone("123456789")
                 .build();
     }
@@ -32,7 +32,7 @@ public class CustomerHelper {
         return CustomerOutput.builder()
                 .id(1L)
                 .name("JOAO")
-                .name("joao@test.com.br")
+                .email("joao@test.com.br")
                 .phone("123456789")
                 .build();
     }
@@ -42,7 +42,7 @@ public class CustomerHelper {
         return CustomerDto.builder()
                 .id(1L)
                 .name("JOAO")
-                .name("joao@test.com.br")
+                .email("joao@test.com.br")
                 .phone("123456789")
                 .build();
     }
