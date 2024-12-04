@@ -41,7 +41,6 @@ import static org.mockito.Mockito.*;
 @WireMockTest(httpPort = 8080)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
-@Transactional
 public class CreateOrderUseCaseIT {
 
     @Autowired

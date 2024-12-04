@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -37,7 +38,7 @@ public class OrderCheckoutUseCaseIT {
     private OrderGateway orderGateway;
 
     @Test
-    public void shouldFindOrderByIdUseCase() {
+    public void shouldCheckoutOrder() {
         // Arrange
         UUID orderId = UUID.randomUUID();
         Order order = OrderHelper.createOrder();
@@ -45,7 +46,9 @@ public class OrderCheckoutUseCaseIT {
         order.setDeliveryAddress(CustomerHelper.createDeliveryAddress());
         orderGateway.save(order);
 
-        stubFor(put("/product-management/api/products/stock/decrease").willReturn(ok()));
+        stubFor(put("/product-management/api/products/stock/decrease")
+                .inScenario("checkout-order")
+                .willReturn(ok()));
 
         PaymentInput input = new PaymentInput(PaymentMethod.PIX);
 

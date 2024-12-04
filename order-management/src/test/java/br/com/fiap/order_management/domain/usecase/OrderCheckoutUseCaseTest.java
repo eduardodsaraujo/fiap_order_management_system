@@ -43,7 +43,7 @@ public class OrderCheckoutUseCaseTest {
     }
 
     @Test
-    public void shouldFindOrderByIdUseCase() {
+    public void shouldCheckoutOrder() {
         // Arrange
         UUID orderId = UUID.randomUUID();
         Order order = OrderHelper.createOrder();

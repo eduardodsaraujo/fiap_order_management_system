@@ -70,7 +70,7 @@ public class ProcessPaymentUseCaseTest {
         verify(orderGateway, times(1)).findByPaymentId(any(UUID.class));
         verify(orderGateway, times(1)).save(any(Order.class));
 
-        assertThat(OrderStatus.AWAITING_SHIPMENT).isEqualTo(order.getStatus());
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.AWAITING_SHIPMENT);
         assertThat(order.getPayment().getStatus()).isEqualTo(paymentReceipt.getStatus());
     }
 
@@ -100,7 +100,7 @@ public class ProcessPaymentUseCaseTest {
         verify(orderGateway, times(1)).findByPaymentId(any(UUID.class));
         verify(orderGateway, times(1)).save(any(Order.class));
 
-        assertThat(OrderStatus.CANCELED).isEqualTo(order.getStatus());
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELED);
         assertThat(order.getPayment().getStatus()).isEqualTo(paymentReceipt.getStatus());
     }
 
