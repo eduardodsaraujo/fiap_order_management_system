@@ -78,7 +78,7 @@ This project implements an **Order Management System** built using a microservic
 - **API Endpoints**:
   - `POST /api/orders`: Create a new order.
   - `GET /api/orders/{orderId}`: Retrieve specific order details.
-  - `PUT /api/orders/{orderId}/cancel`: Cancel an order.
+  - `PUT /api/orders/{orderId}/checkout`: Checkout an order.
   - `DELETE /api/orders/{orderId}`: Delete an order.
 
 ---
